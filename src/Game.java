@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class Game implements PlayerProxyListener {
 
-	Logger p = Printer.get(); // TODO remove printer
+	Logger printer = Printer.get(); // TODO remove printer
 
 	// player numbers are locked in place. turn order is variable.
 
@@ -50,7 +50,7 @@ public class Game implements PlayerProxyListener {
 
 	void setup(int players, int phases, int rounds) {
 		this.enemyDeck = new EnemyDeck(rounds);
-		p.log(enemyDeck.toString() + "\n\n\n"); // TODO wrong place for a review of enemy cards
+		printer.log(enemyDeck.toString() + "\n\n\n"); // TODO wrong place for a review of enemy cards
 		
 		this.players = players;
 		this.playersStuff = new PlayerStuff[players];
@@ -67,7 +67,7 @@ public class Game implements PlayerProxyListener {
 			turnOrder[i] = i;
 		}
 		this.board = new Board(players);
-		p.log("New Game: " + players + " players");
+		printer.log("New Game: " + players + " players");
 	}
 	
 	void setPlayerProxy(int player, PlayerProxy proxy) {
@@ -84,21 +84,21 @@ public class Game implements PlayerProxyListener {
 	private void performRound(int round) {
 		int year = round + 1;
 		board.incrementYear();
-		p.log("Begin Year: " + year
+		printer.log("Begin Year: " + year
 				+ " ******************************************************"
 				+ " ******************************************************");
 		int numberOfPhases = PhaseHandler.getPhaseCount();
 		for (int phase = 0; phase < numberOfPhases; phase++) {
 			performPhase(round, phase);
 		}
-		p.log("Year " + year + " over." + "\n\n");
+		printer.log("Year " + year + " over." + "\n\n");
 	}
 
 	// LOOP PHASES/SEASONS within A ROUND/YEAR
 	private void performPhase(int round, int phase) {
 		int truePhase = phase + 1;
 		board.incrementPhase();
-		p.log("\n" + "Phase " + truePhase
+		printer.log("\n" + "Phase " + truePhase
 				+ " start. **************************");
 		
 		// aid from the king
@@ -139,7 +139,7 @@ public class Game implements PlayerProxyListener {
 			int playerAtTurnOrder = getPlayerAtTurnOrder(turn);
 			performTurn(round, phase, playerAtTurnOrder);
 		}
-		p.log("\n" + "Phase " + truePhase + " over." + "\n");
+		printer.log("\n" + "Phase " + truePhase + " over." + "\n");
 	}
 	
 	@Override
@@ -153,7 +153,7 @@ public class Game implements PlayerProxyListener {
 	// LOOP TURNS within A PHASE/SEASON
 	private void performTurn(int round, int phase, int player) {
 		String phaseName = PhaseHandler.getPhase(phase + 1).getName();
-		p.log("\n" + p.getPlayer(player) + "\n" + p.getRound(round) + "\n"
+		printer.log(printer.getPlayer(player) + " / " + printer.getRound(round) + " / "
 				+ phaseName);
 		
 		if (rolls == null || !isProductiveSeason(phase)) {
@@ -189,7 +189,7 @@ public class Game implements PlayerProxyListener {
 		final int player = this.player;
 		if (rewardChoice == null) {
 			//player has skipped the turn
-			p.log("Player " + player + " has skipped the turn.");
+			printer.log("Player " + player + " has skipped the turn.");
 			return;
 		}		
 
@@ -205,7 +205,7 @@ public class Game implements PlayerProxyListener {
 			}
 		}
 		if (!skip) {
-			p.log("Player " + (player+1) + " received the reward [" + rewardChoice.getHumanReadableReward() + "] from " + advisor.getName() + "(" + advisor.getOrdinal() + ").");
+			printer.log("Player " + (player+1) + " received the reward [" + rewardChoice.getHumanReadableReward() + "] from " + advisor.getName() + "(" + advisor.getOrdinal() + ").");
 			RewardTotal reward = rewardChoice.getReward();
 			myStuff.receiveReward(reward);
 			// TODO handle peek and soldiers
@@ -216,11 +216,11 @@ public class Game implements PlayerProxyListener {
 				// TODO player can peek
 			}
 		} else {
-			p.log("Player " + (player + 1) + " skipped the turn, unable to pay the gift cost.");
+			printer.log("Player " + (player + 1) + " skipped the turn, unable to pay the gift cost.");
 		}
 		
 		//TODO build a building
-		p.log(myStuff.toString());
+		printer.log(myStuff.toString());
 	}
 	
 	// USES IDENTICAL LOGIC TO determineEnvoy FOR MOST
@@ -273,6 +273,7 @@ public class Game implements PlayerProxyListener {
 				// multiple players get minimal help
 				for (Long playerId : playersWithLeastBuildingsAndLeastResources) {
 					int player = playerId.intValue();
+					printer.log("Player " + (player+1) + " received the King's aid of 1 resource.");
 					rememberRoundPhasePlayer(round, phase, player);
 					proxies[player].onChooseGoods(1);
 					complete = true;
@@ -282,6 +283,7 @@ public class Game implements PlayerProxyListener {
 			if (!complete) {
 				// award to fewest resources
 				int player = playersWithLeastBuildingsAndLeastResources.get(0).intValue();
+				printer.log("Player " + (player+1) + " received the King's aid of 1 bonus die in Spring.");
 				playersStuff[player].gainAid();
 				complete = true;
 			}
@@ -290,6 +292,7 @@ public class Game implements PlayerProxyListener {
 		if (!complete) {
 			// award to fewest buildings
 			int player = playersWithLeastBuildings.get(0).intValue();
+			printer.log("Player " + (player+1) + " received the King's aid of 1 bonus die in Spring.");
 			playersStuff[player].gainAid();
 			complete = true;
 		}
@@ -299,6 +302,7 @@ public class Game implements PlayerProxyListener {
 		for (PlayerStuff p : playersStuff) {
 			if (p.hasAid()) {
 				p.useAid();
+				printer.log("Player " + (p.getPlayerId()+1) + " returns the King's aid die.");
 			}
 		}
 	}
@@ -316,6 +320,7 @@ public class Game implements PlayerProxyListener {
 		for (PlayerStuff p : playersStuff) {
 			if (p.countBuildings() == mostBuildingsCount) {
 				playersWithMostBuildings.add(new Long(p.getPlayerId()));
+				printer.log("Player " + (p.getPlayerId()+1) + " receives the King's Reward of 1 victory point.");
 				p.gainPoints(1);
 			}
 		}
@@ -325,6 +330,7 @@ public class Game implements PlayerProxyListener {
 		for (PlayerStuff p : playersStuff) {
 			if (p.hasEnvoy()) {
 				p.useEnvoy();
+				printer.log("Player " + (p.getPlayerId()+1) + " has not used the King's envoy. The envoy is returned to the board.");
 			}
 		}
 	}
@@ -378,11 +384,13 @@ public class Game implements PlayerProxyListener {
 			if (playersWithLeastBuildingsAndLeastResources.size() > 1) {
 				// no players get help
 				complete = true;
+				printer.log("Several players were tied for weakest governor. No one receives the King's envoy.");
 			}
 			
 			if (!complete) {
 				// award to fewest resources
 				int player = playersWithLeastBuildingsAndLeastResources.get(0).intValue();
+				printer.log("Player " + (player+1) + " has received the King's envoy, with least resources.");
 				playersStuff[player].gainEnvoy();
 				complete = true;
 			}
@@ -391,6 +399,7 @@ public class Game implements PlayerProxyListener {
 		if (!complete) {
 			// award to fewest buildings
 			int player = playersWithLeastBuildings.get(0).intValue();
+			printer.log("Player " + (player+1) + " has received the King's envoy.");
 			playersStuff[player].gainEnvoy();
 			complete = true;
 		}
@@ -402,11 +411,11 @@ public class Game implements PlayerProxyListener {
 		updateTurnOrder(rolls);
 		for (int turn = 0; turn < players; turn++) {
 			if (rolls != null) {
-				p.log("          roll || " + rolls[turn].toString());
-				p.log("");
+				printer.log("          roll || " + rolls[turn].toString());
+				printer.log("");
 			} else {
-				p.log("          no-roll");
-				p.log("");
+				printer.log("          no-roll");
+				printer.log("");
 			}
 		}
 	}
@@ -429,7 +438,7 @@ public class Game implements PlayerProxyListener {
 	
 	void rollKingsReinforcements() {
 		int reinforcements = Roll.rollTheDice(0, 1, 6).getRoll();
-		p.log("The King sends (" + reinforcements + ") to fight with your city.");
+		printer.log("The King sends (" + reinforcements + ") to fight with the cities.");
 		board.addKingsReinforcements(reinforcements);
 	}
 	
@@ -441,13 +450,13 @@ public class Game implements PlayerProxyListener {
 		for (int player = 0; player < players; player++) {
 			int soldiers = board.getSoldiersFor(player);
 			if (soldiers > strengthToBeat) {
-				p.log("Player " + (player+1) + " won the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + "!");
+				printer.log("Player " + (player+1) + " won the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + "!");
 				battleVictory(player, enemy);
 			} else if (soldiers == strengthToBeat) {
-				p.log("Player " + (player+1) + " stalemated the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ".");
+				printer.log("Player " + (player+1) + " stalemated the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ".");
 				battleDraw(player, enemy);
 			} else {
-				p.log("Player " + (player+1) + " lost the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ".");
+				printer.log("Player " + (player+1) + " lost the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ".");
 				battleLose(player, enemy);
 			}
 		}
@@ -471,7 +480,7 @@ public class Game implements PlayerProxyListener {
 	}
 
 	void complete() {
-		p.log("Calculate scores: Game Over");
+		printer.log("Calculate scores: Game Over");
 	}
 
 	//
@@ -549,11 +558,11 @@ public class Game implements PlayerProxyListener {
 		// determine number of dice
 		int bonusDieCount = PlayerStuff.PLAYER_STARTING_BONUS_DIE_COUNT;
 		if (playersStuff[player].hasAid()) { 
-			p.log("Player " + player + " has the King's aid. +1 bonus die");
+			printer.log("Player " + player + " has the King's aid. +1 bonus die");
 			bonusDieCount++; 
 		}
 		if (playersStuff[player].hasFarms()) {
-			p.log("Player " + player + " has Farms. +1 bonus die");
+			printer.log("Player " + player + " has Farms. +1 bonus die");
 			bonusDieCount++;
 		}
 		// roll 'em

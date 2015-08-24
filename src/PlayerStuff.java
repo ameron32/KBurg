@@ -13,6 +13,8 @@ public class PlayerStuff {
 	
 	private int playerId;
 	private int wood, stone, gold, plus2;
+	// unchosen resources are green bags received but unconverted yet. conversion should take place a little later.
+	// unpaid resources represent LOST resources during lost battles where green bags are lost.	
 	private int unchosenResources, unpaidResources;
 	private int points;
 	private boolean hasEnvoy;
