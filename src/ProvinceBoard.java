@@ -16,7 +16,7 @@ public class ProvinceBoard {
 	public static final int ROW_COMBAT = 2;
 	public static final int ROW_DEFENSE = 3;
 	public static final int ROW_CITY = 4;
-	private static final int TOTAL_ROWS = 5;
+	public static final int TOTAL_ROWS = 5;
 	private static final int MAX_COLUMN = 4;
 	
 	private static final List<ProvinceBuilding> buildings = new ArrayList<>(20);
@@ -140,11 +140,11 @@ public class ProvinceBoard {
 	}
 		
 	// RETURNS QUANTITY OF VICTORY POINTS EARNED
-	int buyNextBuilding(int row) {
+	ProvinceBuilding buyNextBuilding(int row) {
 		int nextBuilding = getNextBuildingColumn(row);
 		buildingTracker[row] = nextBuilding;
 		// return the points earned
-		return getBuilding(row, nextBuilding).getPoints();
+		return getBuilding(row, nextBuilding);
 	}
 	
 	//
@@ -238,10 +238,9 @@ public class ProvinceBoard {
 		int currentBuilding = buildingTracker[row];
 		return (currentBuilding >= column);
 	}
+	
 	@Override
 	public String toString() {
 		return "ProvinceBoard [buildingTracker=" + Arrays.toString(buildingTracker) + "]";
 	}
-	
-	
 }

@@ -46,8 +46,16 @@ public class EnemyCard {
 
 	@Override
 	public String toString() {
-		return "\nEnemyCard [name=" + name + ", year=" + year + ", strength="
-				+ strength + ", \n  victory=" + victory + ", \n  defeat=" + defeat
-				+ ", defeatLoseBuilding=" + defeatLoseBuilding + "]";
+//		return "\nEnemyCard [name=" + name + ", year=" + year + ", strength="
+//				+ strength + ", \n  victory=" + victory + ", \n  defeat=" + defeat
+//				+ ", defeatLoseBuilding=" + defeatLoseBuilding + "]";
+		return toHumanReadableString();
+	}
+	
+	public String toHumanReadableString() {
+		return "\n" + name + "(" + strength + ") on year " + year + "\n"
+				+ "defeat: " + defeat.toString() + "\n"
+				+ ((defeatLoseBuilding) ? "        +1 building\n" : "")
+				+ "victory: " + victory.toString() + "\n";
 	}
 }

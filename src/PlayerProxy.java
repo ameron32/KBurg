@@ -5,4 +5,5 @@ public interface PlayerProxy {
 	void onAdvisorChoice(Roll roll);
 	void onChooseGoods(int unchosenResourcesCount);
 	void onRecruitOption(PlayerStuff stuff);
+	void onBuildOption(PlayerStuff stuff);
 }

@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -21,6 +23,9 @@ public class Roll {
 	private int roll;
 	private int[] standardDice;
 	private int[] bonusDice;
+	
+	private final List<Long> unusedStandardDice = new ArrayList<>(3);
+	private final List<Long> unusedBonusDice = new ArrayList<>();
 
 	public int getPlayer() {
 		return player;
@@ -30,8 +35,58 @@ public class Roll {
 		return roll;
 	}
 
-	public int[] getDice() {
+	public int[] getStandardDice() {
 		return standardDice;
+	}
+	
+	public int[] getBonusDice() {
+		return bonusDice;
+	}
+	
+	public List<Long> getUnusedStandardDice() {
+		return unusedStandardDice;
+	}
+	
+	public List<Long> getUnusedBonusDice() {
+		return unusedBonusDice;
+	}
+	
+	public boolean hasUsableDice() {
+		return !getUnusedStandardDice().isEmpty();
+	}
+	
+	public void useStandardDice(int... dice) {
+		List<Integer> positions = new ArrayList<>();
+		for (int die : dice) {
+			Long d = new Long(die);
+			for (int position = 0; position < unusedStandardDice.size(); position++) {
+				Long d2 = unusedStandardDice.get(position);
+				if (d2.intValue() == d.intValue()) {
+					positions.add(position);
+				}
+			}
+		}
+		for (Integer position : positions) {
+			int p = position;
+			unusedStandardDice.remove(p);
+		}
+	}
+	
+	public void useBonusDice(int... dice) {
+		List<Integer> positions = new ArrayList<>();
+		for (int die : dice) {
+			Long d = new Long(die);
+			for (int position = 0; position < unusedBonusDice.size(); position++) {
+				Long d2 = unusedBonusDice.get(position);
+				if (d2.intValue() == d.intValue()) {
+					positions.add(position);
+				}
+			}
+		}
+		for (Integer position : positions) {
+			int p = position;
+			unusedBonusDice.remove(p);
+		}
 	}
 
 	private Roll(int player, int numOfDice, int dieSides) {
@@ -39,6 +94,7 @@ public class Roll {
 		this.player = player;
 		setDiceSlots(numOfDice);
 		fillDiceSlots(numOfDice, dieSides);
+		setUnusedSlots(numOfDice);
 	}
 	
 	private void setDiceSlots(int numOfDice) {
@@ -80,6 +136,19 @@ public class Roll {
 		}
 	}
 	
+	private void setUnusedSlots(int numOfDice) {
+		if (numOfDice <= 0) {
+			return;
+		}
+		
+		for (int i = 0; i < standardDice.length; i++) {
+			unusedStandardDice.add(new Long(standardDice[i]));
+		}
+		for (int i = 0; i < bonusDice.length; i++) {
+			unusedBonusDice.add(new Long(bonusDice[i]));
+		}
+	}
+	
 	private int _rollOneDie(int dieSides) {
 		BasicRandomizer rand = BasicRandomizer.get();
 		// TODO consider checking rolls
@@ -88,7 +157,7 @@ public class Roll {
 
 	@Override
 	public String toString() {
-		return "Roll [player=" + player + ", roll=" + roll + ", dice="
+		return "Roll [player=" + (player+1) + ", roll=" + roll + ", dice="
 				+ Arrays.toString(standardDice) + ", bonusDice="
 				+ Arrays.toString(bonusDice) + "]";
 	}

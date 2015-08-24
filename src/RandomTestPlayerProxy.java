@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -9,6 +11,9 @@
  */
 public class RandomTestPlayerProxy implements PlayerProxy {
 
+	private static final int HUMAN_DELAY = 10;
+	private static final boolean SPEED_UP = true;
+	
 	PlayerProxyListener listener;
 	
 	@Override
@@ -19,12 +24,11 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 	@Override
 	public void onAdvisorChoice(Roll myRoll) {
 		try {
-			Thread.sleep(1);
+			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 1000));
 			
 			//do logic
 			int rollTotal = myRoll.getRoll();
 			if (rollTotal <= 18) {
-				
 				// ADVISOR SELECTION AND COMPENSATION
 				// grab first option carelessly
 				Advisor advisor = WallOfAdvisors.getAdvisorFor(rollTotal);
@@ -44,8 +48,17 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 
 	@Override
 	public void onChooseGoods(int unchosenResourcesCount) {
-		//always choose a gold
-		listener.onGoodsSelected(new RewardTotal(unchosenResourcesCount, 0, 0));
+		try {
+			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 1000));
+			
+			//always choose a gold
+			listener.onGoodsSelected(new RewardTotal(unchosenResourcesCount, 0, 0));
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			
+		}
 	}
 
 	@Override
@@ -53,4 +66,31 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 		//never recruits
 		listener.onSoldiersRecruited(0);
 	}
+
+	@Override
+	public void onBuildOption(PlayerStuff stuff) {
+		try {
+			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 1000));
+			
+			//build first affordable building
+			ProvinceBuilding building = null;
+			for (int i = 0; i < ProvinceBoard.TOTAL_ROWS; i++) {
+				if (stuff.canAffordNextBuilding(i)) {
+					building = stuff.buyNextBuilding(i);
+				}
+			}
+			
+			List<ProvinceBuilding> buildings = new ArrayList<>(1);
+			if (building != null) {
+				buildings.add(building);
+			}
+			
+			listener.onBuild(buildings);
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			
+		}
+	}	
 }

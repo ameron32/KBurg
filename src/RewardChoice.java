@@ -21,23 +21,24 @@ public class RewardChoice {
 
 	@Override
 	public String toString() {
-		String rewards = "reward of: [";
-		for (int i = 0; i < 9; i++) {
-			if (reward_point_gold_wood_stone_choose_soldier_plus2_peek[i] != 0) {
-				rewards += getLabel(i) + reward_point_gold_wood_stone_choose_soldier_plus2_peek[i] + " ";
-			}
-		}
-		rewards += "] ";
-		String costs = "costs of: [";
-		for (int i = 0; i < 5; i++) {
-			if (cost_point_gold_wood_stone_choose[i] != 0) {
-				costs += getLabel(i) + cost_point_gold_wood_stone_choose[i] + " ";
-			}
-		}
-		rewards += "] ";
-		
-		return "RewardChoice [" + 
-				rewards + costs + "]";
+//		String rewards = "reward of: [";
+//		for (int i = 0; i < 9; i++) {
+//			if (reward_point_gold_wood_stone_choose_soldier_plus2_peek[i] != 0) {
+//				rewards += getLabel(i) + reward_point_gold_wood_stone_choose_soldier_plus2_peek[i] + " ";
+//			}
+//		}
+//		rewards += "] ";
+//		String costs = "costs of: [";
+//		for (int i = 0; i < 5; i++) {
+//			if (cost_point_gold_wood_stone_choose[i] != 0) {
+//				costs += getLabel(i) + cost_point_gold_wood_stone_choose[i] + " ";
+//			}
+//		}
+//		rewards += "] ";
+//		
+//		return "RewardChoice [" + 
+//				rewards + costs + "]";
+		return getHumanReadableReward();
 	}
 	
 	private String getLabel(int position) {

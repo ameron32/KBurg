@@ -36,6 +36,7 @@ public class PlayerStuff {
 	void useEnvoy() { hasEnvoy = false; }
 	void useAid() { hasAid = false; }
 	
+	int countUnchosenResources() { return unchosenResources; }
 	int countWood() { return wood; }
 	int countGold() { return gold; }
 	int countStone() { return stone; }
@@ -48,6 +49,9 @@ public class PlayerStuff {
 	void spendGold(int qty) { gold = gold - qty; }
 	void spendStone(int qty) { stone = stone - qty; }
 	void usePlus2() { plus2--; }
+	
+	void clearUnchosenResources() { unchosenResources = 0; }
+	void clearUnpaidDebt() { unpaidResources = 0; }
 	
 	void gainUnchosenResources(int qty) { unchosenResources = unchosenResources + qty; }
 	void gainPoints(int qty) { points = points + qty; }
@@ -96,6 +100,7 @@ public class PlayerStuff {
 		count += countWood();
 		count += countGold();
 		count += countStone();
+		count += countUnchosenResources();
 		return count;
 	}
 	
@@ -187,6 +192,18 @@ public class PlayerStuff {
 	int countBuildings() {
 		return province.countBuildings();
 	}
+	
+	boolean canAffordNextBuilding(int row) {
+		return province.canAffordNextBuilding(row, countGold(), countWood(), countStone());
+	}
+	
+	ProvinceBuilding buyNextBuilding(int row) {
+		Cost cost = province.getCostOfNextBuilding(row);
+		spendGold(cost.getGold());
+		spendWood(cost.getWood());
+		spendStone(cost.getStone());
+		return province.buyNextBuilding(row);
+	}
 
 	@Override
 	public String toString() {
@@ -195,5 +212,16 @@ public class PlayerStuff {
 				+ points + ", hasEnvoy=" + hasEnvoy + ", hasAid=" + hasAid + ", province=" + province + "]";
 	}
 	
+	public String toHumanReadableString() {
+		return "Player " + (getPlayerId()+1) + " stuff:\n"
+				+ "  points: [" + countPoints() + "]\n"
+				+ "  buildings: [" + countBuildings() + "]\n"
+				+ "  wood/gold/stone: [" + countWood() + "/" + countGold() + "/" + countStone() + "]\n"
+				+ ((countPlus2() > 0) ? "  plus2: " + countPlus2() + "\n": "")
+				+ ((unchosenResources > 0) ? "  unchosenResources: " + unchosenResources + "\n" : "")
+				+ ((unpaidResources > 0) ? "  unpaidResources: " + unpaidResources + "\n" : "")
+				+ ((hasEnvoy) ? "Envoy\n" : "")
+				+ ((hasAid) ? "+1 Aid die\n" : "");
+	}
 	
 }

@@ -114,7 +114,13 @@ public class EnemyDeck {
 	
 	@Override
 	public String toString() {
-		return "EnemyDeck [years=" + years + ", enemyDeck="
-				+ Arrays.toString(enemyDeck) + "]";
+//		return "EnemyDeck [years=" + years + ", enemyDeck="
+//				+ Arrays.toString(enemyDeck) + "]";
+		return toHumanReadableString();
+	}
+	
+	public String toHumanReadableString() {
+		return "EnemyDeck (" + years + ")\n"
+				+ Arrays.toString(enemyDeck);
 	}
 }
