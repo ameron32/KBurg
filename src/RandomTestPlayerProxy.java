@@ -140,8 +140,23 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 	}
 	
 	@Override
+	public void onOfferUseStatue() {
+		// always yes
+		listener.onUseStatueResponse(true);
+	}
+
+	@Override
+	public void onOfferUseChapel() {
+		// always yes
+		listener.onUseChapelResponse(true);
+	}
+	
+	@Override
 	public void onRecruitOption(PlayerStuff stuff) {
 		//never recruits
+		if (stuff.hasBarracks()) {
+			// doesn't matter
+		}
 		listener.onSoldiersRecruited(0);
 	}
 	
