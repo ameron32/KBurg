@@ -37,6 +37,7 @@ public class PlayerStuff {
 	void useAid() { hasAid = false; }
 	
 	int countUnchosenResources() { return unchosenResources; }
+	int countUnpaidDebts() { return unpaidResources; }
 	int countWood() { return wood; }
 	int countGold() { return gold; }
 	int countStone() { return stone; }
@@ -45,13 +46,22 @@ public class PlayerStuff {
 	
 	void spendUnpaidDebt(int qty) { unpaidResources = unpaidResources + qty; }
 	void spendPoints(int qty) { points = points - qty; }
-	void spendWood(int qty) { wood = wood - qty; }
-	void spendGold(int qty) { gold = gold - qty; }
-	void spendStone(int qty) { stone = stone - qty; }
+	void spendWood(int qty) { 
+		wood = wood - qty;
+		if (wood < 0) { wood = 0; }
+	}
+	void spendGold(int qty) { 
+		gold = gold - qty; 
+		if (gold < 0) { gold = 0; }
+	}
+	void spendStone(int qty) { 
+		stone = stone - qty;
+		if (stone < 0) { stone = 0; }
+	}
 	void usePlus2() { plus2--; }
 	
 	void clearUnchosenResources() { unchosenResources = 0; }
-	void clearUnpaidDebt() { unpaidResources = 0; }
+	void clearUnpaidDebts() { unpaidResources = 0; }
 	
 	void gainUnchosenResources(int qty) { unchosenResources = unchosenResources + qty; }
 	void gainPoints(int qty) { points = points + qty; }
@@ -61,11 +71,11 @@ public class PlayerStuff {
 	void gainPlus2(int qty) { plus2 = plus2 + qty; }
 	
 	boolean canPayCost(Cost cost) {
+		// can have negative points!
 		int gold = cost.getGold();
 		int stone = cost.getStone();
 		int wood = cost.getWood();
-		int points = cost.getPoints();
-		if (countGold() < gold || countStone() < stone || countWood() < wood || countPoints() < points) {
+		if (countGold() < gold || countStone() < stone || countWood() < wood) {
 			return false;
 		}
 		//check for extra resources to pay 'choose' cost
@@ -85,7 +95,7 @@ public class PlayerStuff {
 		spendPoints(cost.getPoints());
 	}
 
-	void receiveReward(RewardTotal reward) {
+	void receiveReward(Reward reward) {
 		gainWood(reward.getWood());
 		gainGold(reward.getGold());
 		gainStone(reward.getStone());
@@ -204,12 +214,17 @@ public class PlayerStuff {
 		spendStone(cost.getStone());
 		return province.buyNextBuilding(row);
 	}
+	
+	ProvinceBuilding loseABuilding() {
+		return province.loseBestBuilding();
+	}
 
 	@Override
 	public String toString() {
-		return "PlayerStuff [wood=" + wood + ", stone=" + stone + ", gold=" + gold + ", plus2=" + plus2
-				+ ", unchosenResources=" + unchosenResources + ", unpaidResources=" + unpaidResources + ", points="
-				+ points + ", hasEnvoy=" + hasEnvoy + ", hasAid=" + hasAid + ", province=" + province + "]";
+//		return "PlayerStuff [wood=" + wood + ", stone=" + stone + ", gold=" + gold + ", plus2=" + plus2
+//				+ ", unchosenResources=" + unchosenResources + ", unpaidResources=" + unpaidResources + ", points="
+//				+ points + ", hasEnvoy=" + hasEnvoy + ", hasAid=" + hasAid + ", province=" + province + "]";
+		return toHumanReadableString();
 	}
 	
 	public String toHumanReadableString() {

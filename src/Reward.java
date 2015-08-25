@@ -1,106 +1,83 @@
 
 /**
  * 
- * BUILDER CONTAINER CLASS
- * Provides a RewardChoice to include in an Advisor
+ * POJO for wrapping rewards with labels.
  * 
- * usage: Reward.withReward().points(1)
- * 			.andCost().gold(1)
- * 			.make();
- *
  */
 public class Reward {
-	public static RewardBuilder withReward() {
-		return new RewardBuilder();
+	private int gold, wood, stone;
+	private int points = 0;
+	private int choose = 0;
+	private int soldiers = 0;
+	private int plus2 = 0;
+	private boolean peek;
+	
+	Reward(int gold, int wood, int stone) {
+		this.gold = gold; 
+		this.wood = wood; 
+		this.stone = stone;
 	}
 	
-	public static class RewardBuilder {
-		
-		RewardChoice choice = RewardChoice.createEmpty();			
-		
-		RewardBuilder points(int qty) {
-			choice.reward_point_gold_wood_stone_choose_soldier_plus2_peek[0] = qty;
-			return this;
-		}
-		
-		RewardBuilder gold(int qty) {
-			choice.reward_point_gold_wood_stone_choose_soldier_plus2_peek[1] = qty;
-			return this;
-		}
-		
-		RewardBuilder wood(int qty) {
-			choice.reward_point_gold_wood_stone_choose_soldier_plus2_peek[2] = qty;
-			return this;
-		}
-		
-		RewardBuilder stone(int qty) {
-			choice.reward_point_gold_wood_stone_choose_soldier_plus2_peek[3] = qty;
-			return this;
-		}
-
-		RewardBuilder choose(int qty) {
-			choice.reward_point_gold_wood_stone_choose_soldier_plus2_peek[4] = qty;
-			return this;
-		}
-
-		RewardBuilder soldier(int qty) {
-			choice.reward_point_gold_wood_stone_choose_soldier_plus2_peek[5] = qty;
-			return this;
-		}
-
-		RewardBuilder plus2(int qty) {
-			choice.reward_point_gold_wood_stone_choose_soldier_plus2_peek[6] = qty;
-			return this;
-		}
-
-		RewardBuilder peek() {
-			choice.reward_point_gold_wood_stone_choose_soldier_plus2_peek[7] = 1;
-			return this;
-		}
-		
-		CostBuilder andCost() {
-			return new CostBuilder(this);
-		}
-		
-		RewardChoice make() {
-			return choice;
-		}
+	Reward(int gold, int wood, int stone, int points, int choose) {
+		this(gold, wood, stone);
+		this.points = points;
+		this.choose = choose;
 	}
 	
-	public static class CostBuilder {
-		RewardBuilder rb;
-					
-		CostBuilder(RewardBuilder rb) {
-			this.rb = rb;
-		}
-		
-		CostBuilder points(int qty) {
-			rb.choice.cost_point_gold_wood_stone_choose[0] = qty;
-			return this;
-		}
-		
-		CostBuilder gold(int qty) {
-			rb.choice.cost_point_gold_wood_stone_choose[1] = qty;
-			return this;
-		}
-		
-		CostBuilder wood(int qty) {
-			rb.choice.cost_point_gold_wood_stone_choose[2] = qty;
-			return this;
-		}
-		
-		CostBuilder stone(int qty) {
-			rb.choice.cost_point_gold_wood_stone_choose[3] = qty;
-			return this;
-		}
-		
-		CostBuilder choose(int qty) {
-			rb.choice.cost_point_gold_wood_stone_choose[4] = qty;
-			return this;
-		}
-		
-		RewardChoice make() {
-			return rb.choice;				
-		}
+	Reward(int gold, int wood, int stone, int points, int choose, int soldiers, int plus2, int peek) {
+		this(gold, wood, stone, points, choose);
+		this.soldiers = soldiers;
+		this.plus2 = plus2;
+		this.peek = (peek == 1);
+	}
+
+	public int getGold() {
+		return gold;
+	}
+
+	public int getWood() {
+		return wood;
+	}
+
+	public int getStone() {
+		return stone;
+	}
+
+	public int getPoints() {
+		return points;
+	}
+
+	public int getChoose() {
+		return choose;
+	}
+
+	public int getSoldiers() {
+		return soldiers;
+	}
+
+	public int getPlus2() {
+		return plus2;
+	}
+
+	public boolean isPeek() {
+		return peek;
+	}
+	
+	public boolean isEmpty() {
+		return (getGold() == 0 && getWood() == 0 && getStone() == 0 && 
+				getPoints() == 0 && getChoose() == 0 && 
+				getSoldiers() == 0 && getPlus2() == 0 && !isPeek());
+	}
+
+	@Override
+	public String toString() {
+		return "Reward [gold=" + gold + ", wood=" + wood + ", stone=" + stone + ", points=" + points + ", choose="
+				+ choose + ", soldiers=" + soldiers + ", plus2=" + plus2 + ", peek=" + peek + "]";
+	}
+	
+	private String toHumanReadableString() {
+		return "Reward: gold/wood/stone ["+gold+"/"+wood+"/"+stone+"]"
+				+ ((choose != 0) ? " choose: " + choose : "")
+				+ ((points != 0) ? " points: " + points : "");
 	}
 }

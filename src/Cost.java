@@ -40,5 +40,23 @@ public class Cost {
 
 	public int getChoose() {
 		return choose;
-	}	
+	}
+	
+	public boolean isEmpty() {
+		return (getGold() == 0 && getWood() == 0 && getStone() == 0 && 
+				getPoints() == 0 && getChoose() == 0);
+	}
+
+	@Override
+	public String toString() {
+//		return "Cost [gold=" + gold + ", wood=" + wood + ", stone=" + stone + ", points=" + points + ", choose="
+//				+ choose + "]";
+		return toHumanReadableString();
+	}
+	
+	private String toHumanReadableString() {
+		return "Cost: gold/wood/stone ["+gold+"/"+wood+"/"+stone+"]"
+				+ ((choose != 0) ? " choose: " + choose : "")
+				+ ((points != 0) ? " points: " + points : "");
+	}
 }

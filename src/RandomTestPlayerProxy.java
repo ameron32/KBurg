@@ -45,14 +45,31 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 			
 		}
 	}
+	
+	int goldCount = 0, woodCount = 0, stoneCount = 0;
 
 	@Override
 	public void onChooseGoods(int unchosenResourcesCount) {
 		try {
 			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 1000));
 			
-			//always choose a gold
-			listener.onGoodsSelected(new RewardTotal(unchosenResourcesCount, 0, 0));
+			//balance the selection of resources evenly
+			int goldChoice = 0, woodChoice = 0, stoneChoice = 0;
+			for (int i = 0; i < unchosenResourcesCount; i++) {
+				if (shouldChooseGold()) {
+					goldCount++;
+					goldChoice++;
+				}
+				if (shouldChooseWood()) {
+					woodCount++;
+					woodChoice++;
+				}
+				if (shouldChooseStone()) {
+					stoneCount++;
+					stoneChoice++;
+				}
+			}
+			listener.onGoodsSelected(new Reward(goldChoice, woodChoice, stoneChoice));
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -60,7 +77,50 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 			
 		}
 	}
-
+	
+	@Override
+	public void onChooseLosses(int unchosenLossesCount, PlayerStuff stuff) {
+		// TODO: does this AI decision REALLY make sense?
+		try {
+			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 1000));
+			
+			//balance the selection of resources evenly
+			int goldChoice = 0, woodChoice = 0, stoneChoice = 0;
+			for (int i = 0; i < unchosenLossesCount; i++) {
+				if (!shouldChooseGold()) {
+					goldCount--;
+					goldChoice++;
+				}
+				if (!shouldChooseWood()) {
+					woodCount--;
+					woodChoice++;
+				}
+				if (!shouldChooseStone()) {
+					stoneCount--;
+					stoneChoice++;
+				}
+			}
+			listener.onLossesSelected(new Cost(goldChoice, woodChoice, stoneChoice));
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			
+		}		
+	}
+	
+	private boolean shouldChooseGold() {
+		return (goldCount == woodCount && woodCount == stoneCount);
+	}
+	
+	private boolean shouldChooseWood() {
+		return (goldCount > woodCount);
+	}
+	
+	private boolean shouldChooseStone() {
+		return (woodCount > stoneCount);
+	}
+	
 	@Override
 	public void onRecruitOption(PlayerStuff stuff) {
 		//never recruits
@@ -92,5 +152,5 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 		} finally {
 			
 		}
-	}	
+	}
 }

@@ -102,7 +102,7 @@ public class RewardChoice {
 		return new Cost(gold, wood, stone, point, choose);
 	}
 	
-	RewardTotal getReward() {
+	Reward getReward() {
 		int point = reward_point_gold_wood_stone_choose_soldier_plus2_peek[0];
 		int gold = reward_point_gold_wood_stone_choose_soldier_plus2_peek[1];
 		int wood = reward_point_gold_wood_stone_choose_soldier_plus2_peek[2];
@@ -111,6 +111,6 @@ public class RewardChoice {
 		int soldier = reward_point_gold_wood_stone_choose_soldier_plus2_peek[5];
 		int plus2 = reward_point_gold_wood_stone_choose_soldier_plus2_peek[6];
 		int peek = reward_point_gold_wood_stone_choose_soldier_plus2_peek[7];
-		return new RewardTotal(gold, wood, stone, point, choose, soldier, plus2, peek);
+		return new Reward(gold, wood, stone, point, choose, soldier, plus2, peek);
 	}
 }

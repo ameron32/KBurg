@@ -1,7 +1,13 @@
 
 public class Logger {
 
-	Logger(){}
+	private boolean filter;
+	private boolean[] playerEnabled;
+
+	Logger(boolean filter, boolean[] playerEnabled){
+		this.filter = filter;
+		this.playerEnabled = playerEnabled;
+	}
 
 	String getRound(int round) {
 		round++;
@@ -46,6 +52,24 @@ public class Logger {
 	void log(String message) {
 		if (Printer.DEBUG) {
 			System.out.println(message);
+		}
+	}
+	
+	void log(int player, String message) {
+		if (Printer.DEBUG) {
+			if (!filter) {
+				log("Player " + (player+1) + ": " + message);
+			}
+			if (filter) {
+				if (player >= playerEnabled.length) {
+					return;
+				}
+				boolean shouldDisplay = playerEnabled[player];
+				if (!shouldDisplay) {
+					return;
+				}
+				log("Player " + (player+1) + ": " + message);
+			}
 		}
 	}
 }

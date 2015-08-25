@@ -171,7 +171,7 @@ public class ProvinceBoard {
 	// LOSE A BUILDING TO ATTACKERS
 	//
 	// RETURN COST TO LOSE
-	int loseBestBuilding() {
+	ProvinceBuilding loseBestBuilding() {
 		//count of buildings in the farthest right column
 		int highestNumber = 0;
 		for (int i = 0; i < TOTAL_ROWS; i++) {
@@ -187,7 +187,7 @@ public class ProvinceBoard {
 		}
 		if (highestNumber == 0) {
 			// no buildings. lose nothing.
-			return 0;
+			return null;
 		}
 		//determine FIRST building, top to bottom
 		for (int i = 0; i < TOTAL_ROWS; i++) {
@@ -197,8 +197,8 @@ public class ProvinceBoard {
 				int row = lostBuilding.getRow();
 				int previousBuilding = getPreviousBuildingColumn(row);
 				buildingTracker[row] = previousBuilding;
-				// return lost points
-				return lostBuilding.getPoints();
+				// return building that was lost
+				return lostBuilding;
 			}
 		}
 		throw new IllegalStateException("something happened. I don't know how.");
