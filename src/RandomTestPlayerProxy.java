@@ -15,6 +15,9 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 	private static final boolean SPEED_UP = true;
 	
 	PlayerProxyListener listener;
+	int goldCount = 0;
+	int woodCount = 0;
+	int stoneCount = 0;
 	
 	@Override
 	public void setListener(PlayerProxyListener listener) {
@@ -22,20 +25,22 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 	}	
 	
 	@Override
-	public void onAdvisorChoice(Roll myRoll) {
+	public void onAdvisorChoice(Roll myRoll, PlayerStuff stuff) {
 		try {
 			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 1000));
 			
-			//do logic
+			// grab first option carelessly
 			int rollTotal = myRoll.getRoll();
 			if (rollTotal <= 18) {
 				// ADVISOR SELECTION AND COMPENSATION
-				// grab first option carelessly
 				Advisor advisor = WallOfAdvisors.getAdvisorFor(rollTotal);
 				RewardChoice rewardChoice = advisor.getOptions().get(0);
+				// use all dice
+				myRoll.useAllDice();
 				listener.onRewardChoiceSelected(advisor, rewardChoice);
 			} else {
 				// skip the turn
+				myRoll.useAllDice();
 				listener.onRewardChoiceSelected(null, null);
 			}
 			
@@ -45,8 +50,6 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 			
 		}
 	}
-	
-	int goldCount = 0, woodCount = 0, stoneCount = 0;
 
 	@Override
 	public void onChooseGoods(int unchosenResourcesCount) {
@@ -109,24 +112,6 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 		}		
 	}
 	
-	private boolean shouldChooseGold() {
-		return (goldCount == woodCount && woodCount == stoneCount);
-	}
-	
-	private boolean shouldChooseWood() {
-		return (goldCount > woodCount);
-	}
-	
-	private boolean shouldChooseStone() {
-		return (woodCount > stoneCount);
-	}
-	
-	@Override
-	public void onRecruitOption(PlayerStuff stuff) {
-		//never recruits
-		listener.onSoldiersRecruited(0);
-	}
-
 	@Override
 	public void onBuildOption(PlayerStuff stuff) {
 		try {
@@ -152,5 +137,23 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 		} finally {
 			
 		}
+	}
+	
+	@Override
+	public void onRecruitOption(PlayerStuff stuff) {
+		//never recruits
+		listener.onSoldiersRecruited(0);
+	}
+	
+	private boolean shouldChooseGold() {
+		return (goldCount == woodCount && woodCount == stoneCount);
+	}
+	
+	private boolean shouldChooseWood() {
+		return (goldCount > woodCount);
+	}
+	
+	private boolean shouldChooseStone() {
+		return (woodCount > stoneCount);
 	}
 }

@@ -71,8 +71,9 @@ public class Reward {
 
 	@Override
 	public String toString() {
-		return "Reward [gold=" + gold + ", wood=" + wood + ", stone=" + stone + ", points=" + points + ", choose="
-				+ choose + ", soldiers=" + soldiers + ", plus2=" + plus2 + ", peek=" + peek + "]";
+//		return "Reward [gold=" + gold + ", wood=" + wood + ", stone=" + stone + ", points=" + points + ", choose="
+//				+ choose + ", soldiers=" + soldiers + ", plus2=" + plus2 + ", peek=" + peek + "]";
+		return toHumanReadableString();
 	}
 	
 	private String toHumanReadableString() {

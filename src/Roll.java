@@ -27,67 +27,6 @@ public class Roll {
 	private final List<Long> unusedStandardDice = new ArrayList<>(3);
 	private final List<Long> unusedBonusDice = new ArrayList<>();
 
-	public int getPlayer() {
-		return player;
-	}
-
-	public int getRoll() {
-		return roll;
-	}
-
-	public int[] getStandardDice() {
-		return standardDice;
-	}
-	
-	public int[] getBonusDice() {
-		return bonusDice;
-	}
-	
-	public List<Long> getUnusedStandardDice() {
-		return unusedStandardDice;
-	}
-	
-	public List<Long> getUnusedBonusDice() {
-		return unusedBonusDice;
-	}
-	
-	public boolean hasUsableDice() {
-		return !getUnusedStandardDice().isEmpty();
-	}
-	
-	public void useStandardDice(int... dice) {
-		List<Integer> positions = new ArrayList<>();
-		for (int die : dice) {
-			Long d = new Long(die);
-			for (int position = 0; position < unusedStandardDice.size(); position++) {
-				Long d2 = unusedStandardDice.get(position);
-				if (d2.intValue() == d.intValue()) {
-					positions.add(position);
-				}
-			}
-		}
-		for (Integer position : positions) {
-			int p = position;
-			unusedStandardDice.remove(p);
-		}
-	}
-	
-	public void useBonusDice(int... dice) {
-		List<Integer> positions = new ArrayList<>();
-		for (int die : dice) {
-			Long d = new Long(die);
-			for (int position = 0; position < unusedBonusDice.size(); position++) {
-				Long d2 = unusedBonusDice.get(position);
-				if (d2.intValue() == d.intValue()) {
-					positions.add(position);
-				}
-			}
-		}
-		for (Integer position : positions) {
-			int p = position;
-			unusedBonusDice.remove(p);
-		}
-	}
 
 	private Roll(int player, int numOfDice, int dieSides) {
 		super();
@@ -154,11 +93,104 @@ public class Roll {
 		// TODO consider checking rolls
 		return rand.nextInt(dieSides) + 1;
 	}
+	
+	
 
+	public int getPlayer() {
+		return player;
+	}
+
+	public int getRoll() {
+		return roll;
+	}
+
+	private int[] getStandardDice() {
+		return standardDice;
+	}
+	
+	private int[] getBonusDice() {
+		return bonusDice;
+	}
+	
+	public List<Long> getUnusedStandardDice() {
+		return unusedStandardDice;
+	}
+	
+	public List<Long> getUnusedBonusDice() {
+		return unusedBonusDice;
+	}
+	
+	public boolean hasUsableDice() {
+		return !getUnusedStandardDice().isEmpty();
+	}
+	
+	public void useAllDice() {
+		List<Long> toUse = new ArrayList<>();
+		for (Long die : getUnusedStandardDice()) {
+			toUse.add(die);
+		}
+		for (Long use : toUse) {
+			useStandardDice(use);
+		}
+		if (getUnusedBonusDice().size() == 0) {
+			return;
+		}
+		toUse.clear();
+		for (Long die : getUnusedBonusDice()) {
+			toUse.add(die);
+		}
+		for (Long use : toUse) {
+			useBonusDice(use);
+		}
+	}
+	
+	public void useStandardDice(Long... dice) {
+		List<Long> toRemove = new ArrayList<>();
+		for (Long die : dice) {
+			boolean found = false;
+			for (int position = 0; position < unusedStandardDice.size(); position++) {
+				Long d2 = unusedStandardDice.get(position);
+				if (d2.intValue() == die.intValue()) {
+					if (!found) {
+						toRemove.add(d2);
+						found = true;
+					}
+				}
+			}
+		}
+		unusedStandardDice.removeAll(toRemove);
+	}
+	
+	public void useBonusDice(Long... dice) {
+		List<Long> toRemove = new ArrayList<>();
+		for (Long die : dice) {
+			boolean found = false;
+			for (int position = 0; position < unusedBonusDice.size(); position++) {
+				Long d2 = unusedBonusDice.get(position);
+				if (d2.intValue() == die.intValue()) {
+					if (!found) {
+						toRemove.add(d2);
+						found = true;
+					}
+				}
+			}
+		}
+		unusedBonusDice.removeAll(toRemove);
+	}
+
+	
+	
 	@Override
 	public String toString() {
-		return "Roll [player=" + (player+1) + ", roll=" + roll + ", dice="
-				+ Arrays.toString(standardDice) + ", bonusDice="
-				+ Arrays.toString(bonusDice) + "]";
+//		return "Roll [player=" + (player+1) + ", roll=" + roll + ", dice="
+//				+ Arrays.toString(standardDice) + ", bonusDice="
+//				+ Arrays.toString(bonusDice) + "]";
+		return toHumanReadableString();
+	}
+	
+	private String toHumanReadableString() {
+		return "Roll: (" + roll + "). Made of " + Arrays.toString(standardDice)
+				+ ((bonusDice.length > 0) ? " and bonus of " + Arrays.toString(bonusDice) : "")
+				+ ".";
 	}
 }
