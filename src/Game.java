@@ -460,8 +460,9 @@ public class Game implements PlayerProxyListener {
 			return;
 		}
 		if (buildings.size() == 1) {
-			printer.log("Player " + (player+1) + " built a " + buildings.get(0).getName() + "!");
-			playersStuff[player].gainPoints(buildings.get(0).getPoints());
+			ProvinceBuilding building = buildings.get(0);
+			printer.log("Player " + (player+1) + " built a " + building.getName() + "!");
+			playersStuff[player].gainPoints(building.getPoints());
 			return;
 		}
 		if (buildings.size() > 1) {
@@ -472,7 +473,7 @@ public class Game implements PlayerProxyListener {
 			}
 		}
 	}
-	
+		
 	void _displayRolls() {
 		// TODO add the "reserve advisors / 2-player only" rule
 		for (int turn = 0; turn < players; turn++) {
@@ -514,15 +515,34 @@ public class Game implements PlayerProxyListener {
 		printer.log("Enemy Card revealed: " + enemy.toString());
 		int strengthToBeat = enemy.getStrength();
 		for (int player = 0; player < players; player++) {
+			grantBuildingSoldierBoost(player);
 			int soldiers = board.getSoldiersFor(player);
+			if (enemy.isGoblin() &&	playersStuff[player].hasBarricade()) {
+				printer.log("Player " + (player+1) + " has a Barricade against Goblins. +1");
+				soldiers++;
+			}
+			if (enemy.isZombie() && playersStuff[player].hasPalisade()) {
+				printer.log("Player " + (player+1) + " has a Palisade against Zombies. +1");
+				soldiers++;
+			}
+			if (enemy.isDemon() && playersStuff[player].hasChurch()) {
+				printer.log("Player " + (player+1) + " has a Church against Demons. +1");
+				soldiers++;
+			}
+				
 			if (soldiers > strengthToBeat) {
-				printer.log("Player " + (player+1) + " won the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + "!");
+				printer.log("Player " + (player+1) + " won the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + "!\n");
 				battleVictory(player, enemy);
 			} else if (soldiers == strengthToBeat) {
-				printer.log("Player " + (player+1) + " stalemated the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ".");
-				battleDraw(player, enemy);
+				if (playersStuff[player].hasStoneWall()) {
+					printer.log("Player " + (player+1) + " stalemated the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ", but won because of having a Stone Wall!\n");
+					battleVictory(player, enemy);
+				} else {
+					printer.log("Player " + (player+1) + " stalemated the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ".\n");
+					battleDraw(player, enemy);
+				}
 			} else {
-				printer.log("Player " + (player+1) + " lost the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ".");
+				printer.log("Player " + (player+1) + " lost the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ".\n");
 				battleLose(player, enemy);
 			}
 		}
@@ -633,6 +653,46 @@ public class Game implements PlayerProxyListener {
 		}
 		// roll 'em
 		return Roll.rollTheDice(player, PlayerStuff.PLAYER_DICE_COUNT + bonusDieCount, PlayerStuff.PLAYER_DICE_SIDES);
+	}
+		
+	private void grantBuildingSoldierBoost(int player) {
+		PlayerStuff stuff = playersStuff[player];
+		if (stuff.hasGuardTower()) {
+			printer.log("Player " + (player+1) + " has a Guard Tower. +1");
+			board.increaseSoldiers(player, 1);
+		}
+		if (stuff.hasBlacksmith()) {
+			printer.log("Player " + (player+1) + " has a Blacksmith. +1");
+			board.increaseSoldiers(player, 1);
+		}
+		if (stuff.hasPalisade()) {
+			printer.log("Player " + (player+1) + " has a Palisade. +1");
+			board.increaseSoldiers(player, 1);
+		}
+		if (stuff.hasStoneWall()) {
+			printer.log("Player " + (player+1) + " has a Stone Wall. +1");
+			board.increaseSoldiers(player, 1);
+		}
+		if (stuff.hasFortress()) {
+			printer.log("Player " + (player+1) + " has a Fortress. +1");
+			board.increaseSoldiers(player, 1);
+		}
+		if (stuff.hasChurch()) {
+			printer.log("Player " + (player+1) + " has a Church. +0");
+			board.increaseSoldiers(player, 0);
+		}
+		if (stuff.hasBarricade()) {
+			printer.log("Player " + (player+1) + " has a Barricade. +0");
+			board.increaseSoldiers(player, 0);
+		}
+		if (stuff.hasWizardsGuild()) {
+			printer.log("Player " + (player+1) + " has a Wizards' Guild. +1");
+			board.increaseSoldiers(player, 2);
+		}
+		if (stuff.hasFarms()) {
+			printer.log("Player " + (player+1) + " has Farms. -1");
+			board.increaseSoldiers(player, -1);
+		}
 	}
 	
 	private PlayerProxy getProxy(int player) {

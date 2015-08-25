@@ -6,6 +6,7 @@ public class EnemyCard {
 	RewardChoice victory;
 	RewardChoice defeat;
 	boolean defeatLoseBuilding;
+	boolean isGoblin, isZombie, isDemon;
 	
 	public EnemyCard(String name, int year, int strength, 
 			RewardChoice victory,
@@ -18,6 +19,30 @@ public class EnemyCard {
 		this.victory = victory;
 		this.defeat = defeat;
 		this.defeatLoseBuilding = defeatLoseBuilding;
+	}
+	
+	public boolean isGoblin() {
+		return isGoblin;
+	}
+
+	public void setGoblin(boolean isGoblin) {
+		this.isGoblin = isGoblin;
+	}
+
+	public boolean isZombie() {
+		return isZombie;
+	}
+
+	public void setZombie(boolean isZombie) {
+		this.isZombie = isZombie;
+	}
+
+	public boolean isDemon() {
+		return isDemon;
+	}
+
+	public void setDemon(boolean isDemon) {
+		this.isDemon = isDemon;
 	}
 
 	public String getName() {

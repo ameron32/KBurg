@@ -7,81 +7,173 @@ public class EnemyDeck {
 
 	private static final List<EnemyCard> allCards = new ArrayList<EnemyCard>(25);
 	static {
-		allCards.add(new EnemyCard("Barbarians", 1, 2, 
-				Reward.withReward().gold(1).make(), 
-				Reward.withReward().andCost().choose(1).make(), true));
-		allCards.add(new EnemyCard("Goblins", 1, 2, 
-				Reward.withReward().wood(1).make(), 
-				Reward.withReward().andCost().points(1).wood(1).stone(1).make(), true));
-		allCards.add(new EnemyCard("Goblins", 1, 3, 
-				Reward.withReward().stone(1).make(), 
-				Reward.withReward().andCost().gold(1).make(), true));
-		allCards.add(new EnemyCard("Orcs", 1, 3, 
-				Reward.withReward().gold(1).make(), 
-				Reward.withReward().andCost().points(1).choose(2).make(), false));
-		allCards.add(new EnemyCard("Zombies", 1, 4, 
-				Reward.withReward().points(1).make(),
-				Reward.withReward().andCost().points(2).make(), false));
-		allCards.add(new EnemyCard("Goblins", 2, 3, 
-				Reward.withReward().wood(1).make(),
-				Reward.withReward().andCost().points(1).wood(2).stone(2).make(), true));
-		allCards.add(new EnemyCard("Goblins", 2, 4,
-				Reward.withReward().stone(1).make(),
-				Reward.withReward().andCost().gold(2).make(), true));
-		allCards.add(new EnemyCard("Orcs", 2, 4,
-				Reward.withReward().gold(1).make(),
-				Reward.withReward().andCost().choose(2).make(), true));
-		allCards.add(new EnemyCard("Barbarians", 2, 5,
-				Reward.withReward().gold(1).make(),
-				Reward.withReward().andCost().points(1).choose(2).make(), false));
-		allCards.add(new EnemyCard("Zombies", 2, 5,
-				Reward.withReward().points(1).make(),
-				Reward.withReward().andCost().points(2).make(), false));
-		allCards.add(new EnemyCard("Goblins", 3, 4,
-				Reward.withReward().wood(1).make(),
-				Reward.withReward().andCost().points(1).wood(3).stone(3).make(), true));
-		allCards.add(new EnemyCard("Goblins", 3, 5,
-				Reward.withReward().stone(1).make(),
-				Reward.withReward().andCost().gold(3).make(), true));
-		allCards.add(new EnemyCard("Orcs", 3, 5,
-				Reward.withReward().gold(1).make(),
-				Reward.withReward().andCost().choose(2).make(), true));
-		allCards.add(new EnemyCard("Demons", 3, 6, 
-				Reward.withReward().points(1).make(),
-				Reward.withReward().andCost().points(1).gold(2).wood(1).stone(1).make(), false));
-		allCards.add(new EnemyCard("Zombies", 3, 6, 
-				Reward.withReward().points(1).make(),
-				Reward.withReward().andCost().points(2).make(), false));
-		allCards.add(new EnemyCard("Goblins", 4, 5, 
-				Reward.withReward().wood(1).make(), 
-				Reward.withReward().andCost().points(1).wood(4).stone(4).make(), true));
-		allCards.add(new EnemyCard("Goblins", 4, 6, 
-				Reward.withReward().stone(1).make(), 
-				Reward.withReward().andCost().gold(4).make(), true));
-		allCards.add(new EnemyCard("Demons", 4, 6, 
-				Reward.withReward().gold(1).make(),
-				Reward.withReward().andCost().choose(4).make(), true));
-		allCards.add(new EnemyCard("Orcs", 4, 7, 
-				Reward.withReward().choose(1).make(),
-				Reward.withReward().andCost().choose(2).make(), true));
-		allCards.add(new EnemyCard("Zombies", 4, 7, 
-				Reward.withReward().points(1).make(),
-				Reward.withReward().andCost().points(2).make(), false));
-		allCards.add(new EnemyCard("Barbarians", 5, 7, 
-				Reward.withReward().points(1).make(),
-				Reward.withReward().andCost().points(8).make(), false));
-		allCards.add(new EnemyCard("Barbarians", 5, 8, 
-				Reward.withReward().points(1).make(),
-				Reward.withReward().andCost().make(), true));
-		allCards.add(new EnemyCard("Demons", 5, 8, 
-				Reward.withReward().points(2).make(),
-				Reward.withReward().andCost().points(2).make(), true));
-		allCards.add(new EnemyCard("Demons", 5, 9, 
-				Reward.withReward().points(2).make(),
-				Reward.withReward().andCost().make(), true));
-		allCards.add(new EnemyCard("Dragons", 5, 9, 
-				Reward.withReward().points(3).make(),
-				Reward.withReward().andCost().points(5).make(), false));
+		// USE ENEMYCARDBUILDER
+		allCards.add(EnemyCardBuilder.with()
+				.name("Barbarians")
+				.year(1).strength(2)
+				.victory(Reward.withReward().gold(1).make())
+				.defeat(Reward.withReward().andCost().choose(1).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Goblins").isGoblin()
+				.year(1).strength(2)
+				.victory(Reward.withReward().wood(1).make())
+				.defeat(Reward.withReward().andCost().points(1).wood(1).stone(1).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Goblins").isGoblin()
+				.year(1).strength(3)
+				.victory(Reward.withReward().stone(1).make())
+				.defeat(Reward.withReward().andCost().gold(1).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Orcs")
+				.year(1).strength(3)
+				.victory(Reward.withReward().gold(1).make())
+				.defeat(Reward.withReward().andCost().points(1).choose(2).make())
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Zombies").isZombie()
+				.year(1).strength(4)
+				.victory(Reward.withReward().points(1).make())
+				.defeat(Reward.withReward().andCost().points(2).make())
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Goblins").isGoblin()
+				.year(2).strength(3)
+				.victory(Reward.withReward().wood(1).make())
+				.defeat(Reward.withReward().andCost().points(1).wood(2).stone(2).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Goblins").isGoblin()
+				.year(2).strength(4)
+				.victory(Reward.withReward().stone(1).make())
+				.defeat(Reward.withReward().andCost().gold(2).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Orcs")
+				.year(2).strength(4)
+				.victory(Reward.withReward().gold(1).make())
+				.defeat(Reward.withReward().andCost().choose(2).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Barbarians")
+				.year(2).strength(5)
+				.victory(Reward.withReward().gold(1).make())
+				.defeat(Reward.withReward().andCost().points(1).choose(2).make())
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Zombies").isZombie()
+				.year(2).strength(5)
+				.victory(Reward.withReward().points(1).make())
+				.defeat(Reward.withReward().andCost().points(2).make())
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Goblins").isGoblin()
+				.year(3).strength(4)
+				.victory(Reward.withReward().wood(1).make())
+				.defeat(Reward.withReward().andCost().points(1).wood(3).stone(3).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Goblins").isGoblin()
+				.year(3).strength(5)
+				.victory(Reward.withReward().stone(1).make())
+				.defeat(Reward.withReward().andCost().gold(3).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Orcs")
+				.year(3).strength(5)
+				.victory(Reward.withReward().gold(1).make())
+				.defeat(Reward.withReward().andCost().choose(2).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Demons").isDemon()
+				.year(3).strength(6)
+				.victory(Reward.withReward().points(1).make())
+				.defeat(Reward.withReward().andCost().points(1).gold(2).wood(1).stone(1).make())
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Zombies").isZombie()
+				.year(3).strength(6)
+				.victory(Reward.withReward().points(1).make())
+				.defeat(Reward.withReward().andCost().points(2).make())
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Goblins").isGoblin()
+				.year(4).strength(5)
+				.victory(Reward.withReward().wood(1).make())
+				.defeat(Reward.withReward().andCost().points(1).wood(4).stone(4).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Goblins").isGoblin()
+				.year(4).strength(6)
+				.victory(Reward.withReward().stone(1).make())
+				.defeat(Reward.withReward().andCost().gold(4).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Demons").isDemon()
+				.year(4).strength(6)
+				.victory(Reward.withReward().gold(1).make())
+				.defeat(Reward.withReward().andCost().choose(4).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Orcs")
+				.year(4).strength(7)
+				.victory(Reward.withReward().choose(1).make())
+				.defeat(Reward.withReward().andCost().choose(2).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Zombies").isZombie()
+				.year(4).strength(7)
+				.victory(Reward.withReward().points(1).make())
+				.defeat(Reward.withReward().andCost().points(2).make())
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Barbarians")
+				.year(5).strength(7)
+				.victory(Reward.withReward().points(1).make())
+				.defeat(Reward.withReward().andCost().points(8).make())
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Barbarians")
+				.year(5).strength(8)
+				.victory(Reward.withReward().points(1).make())
+				.defeat(Reward.withReward().andCost().make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Demons").isDemon()
+				.year(5).strength(8)
+				.victory(Reward.withReward().points(2).make())
+				.defeat(Reward.withReward().andCost().points(2).make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Demons").isDemon()
+				.year(5).strength(9)
+				.victory(Reward.withReward().points(2).make())
+				.defeat(Reward.withReward().andCost().make())
+				.andLoseABuilding()
+				.make());
+		allCards.add(EnemyCardBuilder.with()
+				.name("Dragons")
+				.year(5).strength(9)
+				.victory(Reward.withReward().points(3).make())
+				.defeat(Reward.withReward().andCost().points(5).make())
+				.make());
 	}
 	static EnemyCard getRandomCardForYear(int year) {
 		List<EnemyCard> cardsInTheYear = new ArrayList<>();
@@ -122,5 +214,75 @@ public class EnemyDeck {
 	public String toHumanReadableString() {
 		return "EnemyDeck (" + years + ")\n"
 				+ Arrays.toString(enemyDeck);
+	}
+	
+	
+	
+	public static class EnemyCardBuilder {
+	
+		String name;
+		int year;
+		int strength;
+		RewardChoice victory;
+		RewardChoice defeat;
+		boolean defeatLoseBuilding;
+		boolean isGoblin, isZombie, isDemon;
+		
+		public static EnemyCardBuilder with() {
+			return new EnemyCardBuilder();
+		}
+	
+		public EnemyCardBuilder name(String name) {
+			this.name = name;
+			return this;
+		}
+		
+		public EnemyCardBuilder year(int year) {
+			this.year = year;
+			return this;
+		}
+		
+		public EnemyCardBuilder strength(int strength) {
+			this.strength = strength;
+			return this;
+		}
+		
+		public EnemyCardBuilder victory(RewardChoice victory) {
+			this.victory = victory;
+			return this;
+		}
+		
+		public EnemyCardBuilder defeat(RewardChoice defeat) {
+			this.defeat = defeat;
+			return this;
+		}
+		
+		public EnemyCardBuilder andLoseABuilding() {
+			this.defeatLoseBuilding = true;
+			return this;
+		}
+		
+		public EnemyCardBuilder isGoblin() {
+			this.isGoblin = true;
+			return this;
+		}
+		
+		public EnemyCardBuilder isZombie() {
+			this.isZombie = true;
+			return this;
+		}
+		
+		public EnemyCardBuilder isDemon() {
+			this.isDemon = true;
+			return this;
+		}		
+		
+		public EnemyCard make() {
+			EnemyCard card = new EnemyCard(name, year, strength, victory, defeat, defeatLoseBuilding);
+			card.setGoblin(isGoblin);
+			card.setZombie(isZombie);
+			card.setDemon(isDemon);
+			return card;
+		}
 	}
 }

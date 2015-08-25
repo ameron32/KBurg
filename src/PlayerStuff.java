@@ -154,7 +154,7 @@ public class PlayerStuff {
 	}
 	
 	boolean hasWizardsGuild() {
-		return province.hasBuilding("Wizard's Guild");
+		return province.hasBuilding("Wizards' Guild");
 	}
 	
 	boolean hasPalisade() {

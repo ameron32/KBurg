@@ -67,4 +67,8 @@ public class ProvinceBuilding {
 	String getDescription() {
 		return description;
 	}
+	
+	boolean is(String name) {
+		return (name.equalsIgnoreCase(getName()));
+	}
 }
