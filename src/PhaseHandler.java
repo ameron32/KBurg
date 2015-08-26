@@ -3,6 +3,8 @@ import java.util.List;
 
 
 public class PhaseHandler {
+	
+	private static final String PRODUCTIVE_SUMMER_NAME = "Summer Season";
 
 	static List<Phase> phases = new ArrayList<>(8);
 	static {
@@ -16,7 +18,7 @@ public class PhaseHandler {
 				.name("The King's Reward")
 				.ordinal(3).reward().make());
 		phases.add(Phase.Builder.of()
-				.name("Summer Season")
+				.name(PRODUCTIVE_SUMMER_NAME)
 				.ordinal(4).productive().make());
 		phases.add(Phase.Builder.of()
 				.name("The King's Envoy")
@@ -41,6 +43,9 @@ public class PhaseHandler {
 	}
 	static int getPhaseCount() {
 		return phases.size();
+	}
+	static boolean isSummer(Phase phase) {
+		return (phase.getName().equalsIgnoreCase(PRODUCTIVE_SUMMER_NAME));
 	}
 	
 }

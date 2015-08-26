@@ -6,18 +6,18 @@ public class MainProvinceBoardTest {
 	public static void main(String[] args) {
 		for (int i = 0; i < 5; i++) { playerBoards[i] = new ProvinceBoard(); }
 		ProvinceBoard a = playerBoards[0];
-		a.buyNextBuilding(ProvinceBoard.ROW_RELIGION);
-		a.buyNextBuilding(ProvinceBoard.ROW_RELIGION);
-		a.buyNextBuilding(ProvinceBoard.ROW_RELIGION);
-		a.buyNextBuilding(ProvinceBoard.ROW_RELIGION);
+		a.buyNextBuilding(ProvinceBoard.ROW_RELIGION, false);
+		a.buyNextBuilding(ProvinceBoard.ROW_RELIGION, false);
+		a.buyNextBuilding(ProvinceBoard.ROW_RELIGION, false);
+		a.buyNextBuilding(ProvinceBoard.ROW_RELIGION, false);
 		System.out.println(a.hasBuilding("Statue"));
 		System.out.println(a.hasBuilding("Chapel"));
 		System.out.println(a.hasBuilding("Church"));
 		System.out.println(a.hasBuilding("Cathedral"));
-		a.buyNextBuilding(ProvinceBoard.ROW_MERCHANT);
-		a.buyNextBuilding(ProvinceBoard.ROW_MERCHANT);
-		a.buyNextBuilding(ProvinceBoard.ROW_MERCHANT);
-		a.buyNextBuilding(ProvinceBoard.ROW_MERCHANT);
+		a.buyNextBuilding(ProvinceBoard.ROW_MERCHANT, false);
+		a.buyNextBuilding(ProvinceBoard.ROW_MERCHANT, false);
+		a.buyNextBuilding(ProvinceBoard.ROW_MERCHANT, false);
+		a.buyNextBuilding(ProvinceBoard.ROW_MERCHANT, false);
 		System.out.println(a.hasBuilding("Inn"));
 		System.out.println(a.hasBuilding("Market"));
 		System.out.println(a.hasBuilding("Farms"));

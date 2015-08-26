@@ -19,7 +19,7 @@ public class RollComparator implements Comparator<Roll> {
 
 	@Override
 	public int compare(Roll r1, Roll r2) {
-		return (r1.getRoll() * 1000 + turnOrder[r1.getPlayer()])
-				- (r2.getRoll() * 1000 + turnOrder[r2.getPlayer()]);
+		return (r1.getUnusedTotal() * 1000 + turnOrder[r1.getPlayer()])
+				- (r2.getUnusedTotal() * 1000 + turnOrder[r2.getPlayer()]);
 	}
 }

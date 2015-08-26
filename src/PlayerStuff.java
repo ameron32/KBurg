@@ -148,7 +148,7 @@ public class PlayerStuff {
 	}
 	
 	boolean hasMerchantsGuild() {
-		return province.hasBuilding("Merchant's Guild");
+		return province.hasBuilding("Merchants' Guild");
 	}
 	
 	boolean hasGuardTower() {
@@ -204,15 +204,15 @@ public class PlayerStuff {
 	}
 	
 	boolean canAffordNextBuilding(int row) {
-		return province.canAffordNextBuilding(row, countGold(), countWood(), countStone());
+		return province.canAffordNextBuilding(row, countGold(), countWood(), countStone(), hasCrane());
 	}
 	
 	ProvinceBuilding buyNextBuilding(int row) {
-		Cost cost = province.getCostOfNextBuilding(row);
+		Cost cost = province.getCostOfNextBuilding(row, hasCrane());
 		spendGold(cost.getGold());
 		spendWood(cost.getWood());
 		spendStone(cost.getStone());
-		return province.buyNextBuilding(row);
+		return province.buyNextBuilding(row, hasCrane());
 	}
 	
 	ProvinceBuilding loseABuilding() {

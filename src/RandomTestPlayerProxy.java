@@ -29,8 +29,13 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 		try {
 			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 1000));
 			
+			// remember Market
+			if (stuff.hasMarket()) {
+				// this bot doesn't care
+			}
+			
 			// grab first option carelessly
-			int rollTotal = myRoll.getRoll();
+			int rollTotal = myRoll.getUnusedTotal();
 			if (rollTotal <= 18) {
 				// ADVISOR SELECTION AND COMPENSATION
 				Advisor advisor = WallOfAdvisors.getAdvisorFor(rollTotal);
@@ -39,9 +44,25 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 				myRoll.useAllDice();
 				listener.onRewardChoiceSelected(advisor, rewardChoice);
 			} else {
-				// skip the turn
-				myRoll.useAllDice();
-				listener.onRewardChoiceSelected(null, null);
+				// use the first dice with a plus 2 (if available)
+				int diePosition = 0;
+				Long die = myRoll.getUnusedStandardDice().get(diePosition);
+				boolean andPlus2Token = false;
+				if (stuff.countPlus2() > 0) {
+					andPlus2Token = true;
+				}
+				int advisorTotal = die.intValue();
+				advisorTotal +=	((andPlus2Token) ? 2 : 0);
+				if (andPlus2Token) {
+					stuff.usePlus2();
+				}
+
+				// ADVISOR SELECTION AND COMPENSATION
+				Advisor advisor = WallOfAdvisors.getAdvisorFor(advisorTotal);
+				RewardChoice rewardChoice = advisor.getOptions().get(0);
+				// use dice
+				myRoll.useStandardDice(die);
+				listener.onRewardChoiceSelected(advisor, rewardChoice);
 			}
 			
 		} catch (InterruptedException e) {
@@ -120,8 +141,10 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 			//build first affordable building
 			ProvinceBuilding building = null;
 			for (int i = 0; i < ProvinceBoard.TOTAL_ROWS; i++) {
-				if (stuff.canAffordNextBuilding(i)) {
-					building = stuff.buyNextBuilding(i);
+				if (building == null) {
+					if (stuff.canAffordNextBuilding(i)) {
+						building = stuff.buyNextBuilding(i);
+					}
 				}
 			}
 			
@@ -140,15 +163,30 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 	}
 	
 	@Override
-	public void onOfferUseStatue() {
-		// always yes
-		listener.onUseStatueResponse(true);
+	public void onOfferUseStatue(Roll roll) {
+		if (roll.getUnusedTotal() < 12) {
+			// if a low roll, then yes
+			int lowestNumber = 31000;
+			int diePosition = 0;
+			List<Long> allUnusedDice = roll.getAllUnusedDice();
+			for (int position = 0; position < allUnusedDice.size(); position++) {
+				int dieValue = allUnusedDice.get(position).intValue();
+				if (dieValue < lowestNumber) {
+					lowestNumber = dieValue;
+					diePosition = position;
+				}
+			}
+			listener.onUseStatueResponse(true, roll, diePosition);
+		} else {
+			// if a high roll, then no
+			listener.onUseStatueResponse(false, roll, 0);
+		}
 	}
 
 	@Override
-	public void onOfferUseChapel() {
+	public void onOfferUseChapel(Roll roll) {
 		// always yes
-		listener.onUseChapelResponse(true);
+		listener.onUseChapelResponse(true, roll);
 	}
 	
 	@Override
@@ -160,6 +198,12 @@ public class RandomTestPlayerProxy implements PlayerProxy {
 		listener.onSoldiersRecruited(0);
 	}
 	
+	@Override
+	public void onOfferUseTownHall(PlayerStuff stuff) {
+		//always use town hall
+		listener.onUseTownHallResponse(true);
+	}
+
 	private boolean shouldChooseGold() {
 		return (goldCount == woodCount && woodCount == stoneCount);
 	}

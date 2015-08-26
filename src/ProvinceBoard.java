@@ -115,32 +115,32 @@ public class ProvinceBoard {
 	//
 	// BUYING A BUILDING
 	//
-	boolean canAffordNextBuilding(int row, int playerGold, int playerWood, int playerStone) {
+	boolean canAffordNextBuilding(int row, int playerGold, int playerWood, int playerStone, boolean hasCrane) {
 		int nextBuildingInRow = getNextBuildingColumn(row);
 		if (!doesBuildingExist(row, nextBuildingInRow)) {
 			//no more buildings in row, so you can't afford the next one
 			return false;
 		}
 		ProvinceBuilding buildingBlueprint = getBuilding(row, nextBuildingInRow);
-		Cost nextBuildingCost = getCostOfBuilding(buildingBlueprint);
+		Cost nextBuildingCost = getCostOfBuilding(buildingBlueprint, hasCrane);
 		if (playerGold >= nextBuildingCost.getGold() && playerWood >= nextBuildingCost.getWood() && playerStone >= nextBuildingCost.getStone()) {
 			return true;
 		}
 		return false;
 	}
 	
-	Cost getCostOfNextBuilding(int row) {
+	Cost getCostOfNextBuilding(int row, boolean hasCrane) {
 		int nextBuildingInRow = getNextBuildingColumn(row);
 		if (!doesBuildingExist(row, nextBuildingInRow)) {
 			//no more buildings in row, so you can't afford the next one
 			return null;
 		}
 		ProvinceBuilding buildingBlueprint = getBuilding(row, nextBuildingInRow);
-		return getCostOfBuilding(buildingBlueprint);
+		return getCostOfBuilding(buildingBlueprint, hasCrane);
 	}
 		
 	// RETURNS QUANTITY OF VICTORY POINTS EARNED
-	ProvinceBuilding buyNextBuilding(int row) {
+	ProvinceBuilding buyNextBuilding(int row, boolean hasCrane) {
 		int nextBuilding = getNextBuildingColumn(row);
 		buildingTracker[row] = nextBuilding;
 		// return the points earned
@@ -227,8 +227,11 @@ public class ProvinceBoard {
 		return true;
 	}
 
-	private Cost getCostOfBuilding(ProvinceBuilding buildingBlueprint) {
+	private Cost getCostOfBuilding(ProvinceBuilding buildingBlueprint, boolean hasCrane) {
 		int goldCost = buildingBlueprint.getGoldCost();
+		if (hasCrane && buildingBlueprint.getColumn() > 2) {
+			goldCost -= 1;
+		}
 		int woodCost = buildingBlueprint.getWoodCost();
 		int stoneCost = buildingBlueprint.getStoneCost();
 		return new Cost(goldCost, woodCost, stoneCost);

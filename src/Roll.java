@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -20,20 +21,36 @@ public class Roll {
 	}
 	
 	private int player = NO_PLAYER;
-	private int roll;
+	private int total;
 	private int[] standardDice;
 	private int[] bonusDice;
+	private boolean isStatueUsed = false;
+	private boolean isChapelUsed = false;
 	
 	private final List<Long> unusedStandardDice = new ArrayList<>(3);
 	private final List<Long> unusedBonusDice = new ArrayList<>();
 
-
+	private int numOfDice;
+	private int dieSides;
+	
 	private Roll(int player, int numOfDice, int dieSides) {
 		super();
 		this.player = player;
+		this.numOfDice = numOfDice;
+		this.dieSides = dieSides;
+		rollAllDice();
+	}
+	
+	private void rollAllDice() {
+		clearUnusedDice();
 		setDiceSlots(numOfDice);
 		fillDiceSlots(numOfDice, dieSides);
 		setUnusedSlots(numOfDice);
+	}
+	
+	private void clearUnusedDice() {
+		unusedStandardDice.clear();
+		unusedBonusDice.clear();
 	}
 	
 	private void setDiceSlots(int numOfDice) {
@@ -54,24 +71,46 @@ public class Roll {
 			return;
 		}
 		
-		if (numOfDice <= MAXIMUM_PLAYER_DICE) {
-			for (int i = 0; i < numOfDice; i++) {
-				int oneRoll = _rollOneDie(dieSides);
-				this.roll += oneRoll;
-				this.standardDice[i] = oneRoll;
-			}
+//		if (numOfDice <= MAXIMUM_PLAYER_DICE) {
+//			for (int i = 0; i < numOfDice; i++) {
+//				int oneRoll = _rollOneDie(dieSides);
+//				this.standardDice[i] = oneRoll;
+//			}
+//		} else {
+//			for (int i = 0; i < MAXIMUM_PLAYER_DICE; i++) {
+//				int oneRoll = _rollOneDie(dieSides);
+//				this.standardDice[i] = oneRoll;
+//			}
+//			int numOfBonusDice = numOfDice - MAXIMUM_PLAYER_DICE; 
+//			for (int i = 0; i < numOfBonusDice; i++) {
+//				int oneRoll = _rollOneDie(dieSides);
+//				this.bonusDice[i] = oneRoll;
+//			}
+//		}
+		for (int i = 0; i < numOfDice; i++) {
+			fillDieSlot(i, dieSides);
+		}
+		recalculateDiceTotals();
+	}
+	
+	private void fillDieSlot(int slot, int dieSides) {
+		int oneRoll = _rollOneDie(dieSides);
+		if (slot < MAXIMUM_PLAYER_DICE) {
+			this.standardDice[slot] = oneRoll;
 		} else {
-			for (int i = 0; i < MAXIMUM_PLAYER_DICE; i++) {
-				int oneRoll = _rollOneDie(dieSides);
-				this.roll += oneRoll;
-				this.standardDice[i] = oneRoll;
-			}
-			int numOfBonusDice = numOfDice - MAXIMUM_PLAYER_DICE; 
-			for (int i = 0; i < numOfBonusDice; i++) {
-				int oneRoll = _rollOneDie(dieSides);
-				this.roll += oneRoll;
-				this.bonusDice[i] = oneRoll;
-			}
+			this.bonusDice[slot - MAXIMUM_PLAYER_DICE] = oneRoll;
+		}
+		// TODO could do this LESS often
+		recalculateDiceTotals();
+	}
+	
+	private void recalculateDiceTotals() {
+		this.total = 0;
+		for (int i = 0; i < standardDice.length; i++) {
+			this.total += standardDice[i];
+		}
+		for (int i = 0; i < bonusDice.length; i++) {
+			this.total += bonusDice[i];
 		}
 	}
 	
@@ -95,21 +134,28 @@ public class Roll {
 	}
 	
 	
-
+	
 	public int getPlayer() {
 		return player;
 	}
 
-	public int getRoll() {
-		return roll;
-	}
-
-	private int[] getStandardDice() {
-		return standardDice;
+	private int getTotal() {
+		return total;
 	}
 	
-	private int[] getBonusDice() {
-		return bonusDice;
+	public int getUnusedTotal() {
+		int total = 0;
+		for (Long die : getAllUnusedDice()) {
+			total += die.intValue();
+		}
+		return total;
+	}
+	
+	public List<Long> getAllUnusedDice() {
+		List<Long> allDice = new ArrayList<>();
+		allDice.addAll(getUnusedStandardDice());
+		allDice.addAll(getUnusedBonusDice());
+		return allDice;
 	}
 	
 	public List<Long> getUnusedStandardDice() {
@@ -121,7 +167,7 @@ public class Roll {
 	}
 	
 	public boolean hasUsableDice() {
-		return !getUnusedStandardDice().isEmpty();
+		return !(getUnusedStandardDice().isEmpty());
 	}
 	
 	public void useAllDice() {
@@ -144,38 +190,59 @@ public class Roll {
 		}
 	}
 	
-	public void useStandardDice(Long... dice) {
-		List<Long> toRemove = new ArrayList<>();
-		for (Long die : dice) {
-			boolean found = false;
-			for (int position = 0; position < unusedStandardDice.size(); position++) {
-				Long d2 = unusedStandardDice.get(position);
-				if (d2.intValue() == die.intValue()) {
-					if (!found) {
-						toRemove.add(d2);
-						found = true;
-					}
-				}
+	public void useStandardDice(Long dice) {
+		for (int position = 0; position < unusedStandardDice.size(); position++) {
+			Long d2 = unusedStandardDice.get(position);
+			if (d2 == dice) {
+				unusedStandardDice.remove(dice);
+				return;
 			}
 		}
-		unusedStandardDice.removeAll(toRemove);
 	}
 	
-	public void useBonusDice(Long... dice) {
-		List<Long> toRemove = new ArrayList<>();
-		for (Long die : dice) {
-			boolean found = false;
-			for (int position = 0; position < unusedBonusDice.size(); position++) {
-				Long d2 = unusedBonusDice.get(position);
-				if (d2.intValue() == die.intValue()) {
-					if (!found) {
-						toRemove.add(d2);
-						found = true;
-					}
-				}
+	public void useBonusDice(Long dice) {
+		for (int position = 0; position < unusedBonusDice.size(); position++) {
+			Long d2 = unusedBonusDice.get(position);
+			if (d2 == dice) {
+				unusedBonusDice.remove(dice);
+				return;
 			}
 		}
-		unusedBonusDice.removeAll(toRemove);
+	}
+	
+	public boolean isStatueEligable() {
+		if (isStatueUsed) {
+			return false;
+		}
+		int[] allDice = new int[standardDice.length + bonusDice.length];
+		System.arraycopy(standardDice, 0, allDice, 0, standardDice.length);
+		System.arraycopy(bonusDice, 0, allDice, standardDice.length, bonusDice.length);
+		int startNumber = allDice[0];
+		for (int die : allDice) {
+			if (die != startNumber) {
+				return false;
+			}
+		}
+		return true;
+	}
+		
+	public boolean isChapelEligable() {
+		if (isChapelUsed) {
+			return false;
+		}
+		return (getTotal() < 8);
+	}
+	
+	public void useStatue(int diePosition) {
+		isStatueUsed = true;
+		clearUnusedDice();
+		fillDieSlot(diePosition, dieSides);
+		setUnusedSlots(numOfDice);
+	}
+	
+	public void useChapel() {
+		isChapelUsed = true;
+		rollAllDice();
 	}
 
 	
@@ -189,8 +256,8 @@ public class Roll {
 	}
 	
 	private String toHumanReadableString() {
-		return "Roll: (" + roll + "). Made of " + Arrays.toString(standardDice)
-				+ ((bonusDice.length > 0) ? " and bonus of " + Arrays.toString(bonusDice) : "")
+		return "Roll: (" + getUnusedTotal() + "). Made of " + getUnusedStandardDice()
+				+ ((getUnusedBonusDice().size() > 0) ? " and bonus of " + getUnusedBonusDice() : "")
 				+ ".";
 	}
 }
