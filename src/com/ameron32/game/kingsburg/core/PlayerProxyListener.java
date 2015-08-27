@@ -3,11 +3,6 @@ import java.util.List;
 
 public interface PlayerProxyListener {
 	
-	/**
-	 * WARNING: MUST USE roll.useStandardDice()
-	 * @param advisor
-	 * @param choice
-	 */
 	void onAdvisorGiftSelection(Advisor advisor, RewardChoice choice);
 	void onGoodsSelection(Reward total);
 	void onLossesSelection(Cost total);

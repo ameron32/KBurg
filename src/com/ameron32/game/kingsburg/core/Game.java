@@ -48,8 +48,6 @@ public class Game implements PlayerProxyListener {
 	private int savedRound; 
 	private int savedPhase; 
 	private int savedPlayer;
-	private boolean[] usedStatue;
-	private boolean[] usedChapel;
 
 	//
 	//
@@ -64,8 +62,6 @@ public class Game implements PlayerProxyListener {
 			playersStuff[i] = new PlayerStuff(i);
 		}
 		this.proxies = new PlayerProxy[players];
-		this.usedStatue = new boolean[players];
-		this.usedChapel = new boolean[players];
 		this.phaseHandler = new PhaseHandler();
 		this.rounds = rounds;
 		turnOrder = new int[players];

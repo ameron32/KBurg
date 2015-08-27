@@ -9,8 +9,6 @@ import java.util.List;
  */
 public class Advisor {
 
-	// TODO Note: when choosing any item (green bag), will require selector
-
 	private String name;
 	private int ordinal;
 	private final List<RewardChoice> options;
