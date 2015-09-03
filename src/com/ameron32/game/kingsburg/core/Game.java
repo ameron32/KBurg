@@ -466,6 +466,7 @@ public class Game implements PlayerProxyListener {
 			}
 			if (reward.isPeek()) {
 				// TODO player can peek
+				getProxy(player).onPeek();
 			}
 		} else {
 			printer.log(player, "skipped the turn, unable to pay the gift cost.");

@@ -26,6 +26,12 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	}	
 	
 	@Override
+	public void onPeek() {
+		// do nothing but describe
+		Printer.get().log("     'I am peeking at the enemy.'");
+	}
+	
+	@Override
 	public void onAdvisorChoice(Roll roll, Board board, PlayerStuff stuff) {
 		botChooseAdvisor(roll, board, stuff);
 	}

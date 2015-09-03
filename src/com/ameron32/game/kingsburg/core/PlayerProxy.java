@@ -11,4 +11,5 @@ public interface PlayerProxy {
 	void onChooseSpentResources(int unchosenLossesCount, PlayerStuff stuff);
 	void onRecruitOption(PlayerStuff stuff);
 	void onBuildOption(PlayerStuff stuff);
+	void onPeek();
 }

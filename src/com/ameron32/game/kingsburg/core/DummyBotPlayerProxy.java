@@ -158,4 +158,16 @@ public class DummyBotPlayerProxy implements PlayerProxy {
 		// you can check "can I afford _________?", etc.
 		
 	}
+
+	
+	
+// SCREEN 8: PEEK AT ENEMY CARD
+// ---------------------------
+// Display enemy card to player
+	
+	@Override
+	public void onPeek() {
+		// look at the enemy card
+		
+	}
 }
