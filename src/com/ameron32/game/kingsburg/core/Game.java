@@ -455,7 +455,8 @@ public class Game implements PlayerProxyListener {
 			printer.log(player, "received the reward [" + rewardChoice.getHumanReadableReward() + "] from " + advisor.getName() + "(" + advisor.getOrdinal() + ").");
 			Reward reward = rewardChoice.getReward();
 			myStuff.receiveReward(reward);
-			// TODO handle peek and soldiers
+
+			// handle soldiers 
 			int soldiers = reward.getSoldiers();
 			if (soldiers > 0) {
 				if (myStuff.hasStable()) {
@@ -465,14 +466,14 @@ public class Game implements PlayerProxyListener {
 				board.increaseSoldiers(player, soldiers);
 			}
 			if (reward.isPeek()) {
-				// TODO player can peek
+				// peek at soldiers
 				getProxy(player).onPeek();
 			}
 		} else {
 			printer.log(player, "skipped the turn, unable to pay the gift cost.");
 		}
 		
-		//TODO build a building
+		// display stuff
 		printer.log(player, myStuff.toHumanReadableString());
 	}
 	
@@ -833,7 +834,6 @@ public class Game implements PlayerProxyListener {
 		final int round = this.savedRound;
 		final int phase = this.savedPhase;
 		final int player = this.savedPlayer;
-		// TODO ADD onChooseLosses after hasBarracks check
 		PlayerStuff stuff = playersStuff[player];
 		int recruitQty = count / 2;
 		if (stuff.hasBarracks()) {
