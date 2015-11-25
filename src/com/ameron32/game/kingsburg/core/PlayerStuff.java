@@ -6,7 +6,7 @@ package com.ameron32.game.kingsburg.core;
  * CONTAINS one player's state, including the buildings owned, resource supply, and special assistance from the king.
  *
  */
-public class PlayerStuff {
+public abstract class PlayerStuff {
 	
 	public static final int PLAYER_DICE_COUNT = 3;
 	public static final int PLAYER_DICE_SIDES = 6;
@@ -240,4 +240,6 @@ public class PlayerStuff {
 				+ ((hasAid) ? "+1 Aid die\n" : "");
 	}
 	
+	public abstract void pullSynchronize();
+	public abstract void pushUpdate();
 }

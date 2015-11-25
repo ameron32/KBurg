@@ -58,9 +58,6 @@ public class Game implements PlayerProxyListener {
 		this.enemyDeck = new EnemyDeck(rounds);
 		this.players = players;
 		this.playersStuff = new PlayerStuff[players];
-		for (int i = 0; i < players; i++) {
-			playersStuff[i] = new PlayerStuff(i);
-		}
 		this.proxies = new PlayerProxy[players];
 		this.phaseHandler = new PhaseHandler();
 		this.rounds = rounds;
@@ -70,12 +67,20 @@ public class Game implements PlayerProxyListener {
 			// season
 			turnOrder[i] = i;
 		}
-		this.board = new Board(players);
 		printer.log("New Game: " + players + " players");
 	}
 	
 	public void setPlayerProxy(int player, PlayerProxy proxy) {
 		proxies[player] = proxy;
+	}
+	
+	public void setPlayerStuff(int player, PlayerStuff stuff) {
+		playersStuff[player] = stuff;
+	}
+	
+	public void setBoard(Board board) {
+		this.board = board;
+		this.board.initialize(players);
 	}
 	
 	public void start() {
@@ -160,8 +165,8 @@ public class Game implements PlayerProxyListener {
 			for (PlayerStuff stuff : playersStuff) {
 				int player = stuff.getPlayerId();
 				if (stuff.hasTownHall()) {
-				rememberRoundPhasePlayer(round, phase, player);
-				getProxy(player).onOfferUseTownHall(stuff);
+					rememberRoundPhasePlayer(round, phase, player);
+					getProxy(player).onOfferUseTownHall(stuff);
 				}
 			}
 			
@@ -475,6 +480,7 @@ public class Game implements PlayerProxyListener {
 		
 		// display stuff
 		printer.log(player, myStuff.toHumanReadableString());
+		playersStuff[player].pushUpdate();
 	}
 	
 	// USES IDENTICAL LOGIC TO determineEnvoy FOR MOST
@@ -705,6 +711,7 @@ public class Game implements PlayerProxyListener {
 			roll.useStatue(diePosition);
 			printer.log(player, "roll is now " + roll.toString());
 		}
+		playersStuff[player].pushUpdate();
 	}
 	
 	@Override
@@ -718,6 +725,7 @@ public class Game implements PlayerProxyListener {
 			roll.useChapel();
 			printer.log(player, "roll is now " + roll.toString());
 		}
+		playersStuff[player].pushUpdate();
 	}
 	
 	@Override
@@ -732,6 +740,7 @@ public class Game implements PlayerProxyListener {
 			chooseLosses(round, phase, player);
 			printer.log(player, "uses Town Hall to gain +1 victory point in exchange for 1 resource.");
 		}
+		playersStuff[player].pushUpdate();
 	}
 	
 	private void chooseGoods(int round, int phase) {
@@ -751,6 +760,7 @@ public class Game implements PlayerProxyListener {
 		}
 		playersStuff[player].clearUnchosenResources();
 		playersStuff[player].receiveReward(total);
+		playersStuff[player].pushUpdate();
 	}
 	
 	private void chooseLosses(int round, int phase) {
@@ -774,6 +784,7 @@ public class Game implements PlayerProxyListener {
 		}
 		playersStuff[player].clearUnpaidDebts();
 		playersStuff[player].payCost(total);
+		playersStuff[player].pushUpdate();
 	}
 	
 	private void offerConstructBuildings(int round, int phase) {
@@ -806,6 +817,7 @@ public class Game implements PlayerProxyListener {
 				playersStuff[player].gainPoints(building.getPoints());
 			}
 		}
+		playersStuff[player].pushUpdate();
 	}
 		
 	private void _displayRolls() {
@@ -842,6 +854,7 @@ public class Game implements PlayerProxyListener {
 		getProxy(player).onChooseSpentResources(recruitQty, stuff);
 		printer.log(player, "recruited [" + count + "] soldier(s).");
 		board.increaseSoldiers(player, count);
+		playersStuff[player].pushUpdate();
 	}
 	
 	private void rollKingsReinforcements() {
@@ -980,6 +993,7 @@ public class Game implements PlayerProxyListener {
 	}
 	
 	private PlayerProxy getProxy(int player) {
+		playersStuff[player].pullSynchronize();
 		return proxies[player];
 	}
 	

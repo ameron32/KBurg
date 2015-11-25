@@ -20,6 +20,10 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	int woodCount = 0;
 	int stoneCount = 0;
 	
+	public PlayerProxyListener getListener() {
+		return listener;
+	}
+	
 	@Override
 	public void setListener(PlayerProxyListener listener) {
 		this.listener = listener;
@@ -79,7 +83,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 					stoneChoice++;
 				}
 			}
-			listener.onGoodsSelection(new Reward(goldChoice, woodChoice, stoneChoice));
+			getListener().onGoodsSelection(new Reward(goldChoice, woodChoice, stoneChoice));
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -114,7 +118,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 					stoneChoice++;
 				}
 			}
-			listener.onLossesSelection(new Cost(goldChoice, woodChoice, stoneChoice));
+			getListener().onLossesSelection(new Cost(goldChoice, woodChoice, stoneChoice));
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -147,7 +151,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 				buildings.add(building);
 			}
 			
-			listener.onBuild(buildings);
+			getListener().onBuild(buildings);
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -174,10 +178,10 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 					diePosition = position;
 				}
 			}
-			listener.onUseStatueResponse(true, roll, diePosition);
+			getListener().onUseStatueResponse(true, roll, diePosition);
 		} else {
 			// if a high roll, then no
-			listener.onUseStatueResponse(false, roll, 0);
+			getListener().onUseStatueResponse(false, roll, 0);
 		}		
 	}
 
@@ -188,7 +192,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	
 	protected void botDecideUseChapel(Roll roll) {
 		// always yes
-		listener.onUseChapelResponse(true, roll);
+		getListener().onUseChapelResponse(true, roll);
 	}
 	
 	@Override
@@ -201,7 +205,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 		if (stuff.hasBarracks()) {
 			// doesn't matter
 		}
-		listener.onChooseRecruitQuantity(0);		
+		getListener().onChooseRecruitQuantity(0);		
 	}
 
 	@Override
@@ -211,7 +215,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	
 	protected void botDecideUseTownHall(PlayerStuff stuff) {
 		//always use town hall
-		listener.onUseTownHallResponse(true);
+		getListener().onUseTownHallResponse(true);
 	}
 	
 	
@@ -248,7 +252,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 		int position = option - 1;
 		RewardChoice rewardChoice = advisor.getOptions().get(position);
 		// use all dice
-		listener.onAdvisorGiftSelection(advisor, rewardChoice);
+		getListener().onAdvisorGiftSelection(advisor, rewardChoice);
 	}
 	
 	private boolean canUse(Advisor advisor, Board board) {
@@ -280,7 +284,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 			RewardChoice rewardChoice = advisor.getOptions().get(0);
 			// use dice
 			roll.useStandardDice(die);
-			listener.onAdvisorGiftSelection(advisor, rewardChoice);
+			getListener().onAdvisorGiftSelection(advisor, rewardChoice);
 		} else {
 			Printer.get().log("     'But--another one taken?... oh, I pass!' says Player " + (stuff.getPlayerId()+1) + ".");
 			emptyRemainingDice(roll);
@@ -293,7 +297,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	}
 	
 	private void skipTurn() {
-		listener.onAdvisorGiftSelection(null, null);
+		getListener().onAdvisorGiftSelection(null, null);
 	}
 
 	private boolean shouldChooseGold() {

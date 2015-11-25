@@ -9,7 +9,7 @@ import java.util.List;
  * STATE of the game board. CONTAINS current game progress, as contained in a game board.
  *
  */
-public class Board {
+public abstract class Board {
 
 	// indicator of current phase
 	private int currentPhase;
@@ -22,32 +22,41 @@ public class Board {
 	
 	boolean[] reservedAdvisors = new boolean[18];
 
-	public Board(int players) {
+	public Board() {
 		super();
+	}
+	
+	void initialize(int players) {
 		soldiers = new int[players];
 		currentPhase = 0;
 		currentYear = 0;
+		pushUpdate();
 	}
 
 	void incrementYear() {
 		currentYear++;
+		pushUpdate();
 	}
 
 	void incrementPhase() {
 		currentPhase++;
+		pushUpdate();
 	}
 	
 	void addKingsReinforcements(int qty) {
 		for (int i = 0; i < soldiers.length; i++) {
 			soldiers[i] = soldiers[i] + qty;
 		}
+		pushUpdate();
 	}
 	
 	void increaseSoldiers(int player, int qty) {
 		soldiers[player] = soldiers[player] + qty;
+		pushUpdate();
 	}
 	
 	int getSoldiersFor(int player) {
+		pullSynchronize();
 		return soldiers[player];
 	}
 	
@@ -55,19 +64,26 @@ public class Board {
 		for (int i = 0; i < soldiers.length; i++) {
 			soldiers[i] = 0;
 		}
+		pushUpdate();
 	}
 	
 	void reserveAdvisor(int ordinal) {
 		int position = ordinal - 1;
 		reservedAdvisors[position] = true;
+		pushUpdate();
 	}
 	
 	boolean isAdvisorReserved(int ordinal) {
+		pullSynchronize();
 		int position = ordinal - 1;
 		return reservedAdvisors[position];
 	}
 
 	void resetAdvisors() {
 		reservedAdvisors = new boolean[18];
+		pushUpdate();
 	}
+	
+	public abstract void pullSynchronize();
+	public abstract void pushUpdate();
 }
