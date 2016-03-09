@@ -19,7 +19,7 @@ public class ProvinceBuilding {
 			int points,
 			int[] goldWoodStoneCost, String description) {
 		super();
-		this.row = row; 
+		this.row = row;
 		this.column = column;
 		this.name = name;
 		this.points = points;

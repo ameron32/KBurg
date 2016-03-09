@@ -26,7 +26,7 @@ public class Advisor {
 				+ Arrays.toString(options.toArray()) + "]";
 	}
 	
-	String getHumanReadableOptions() {
+	public String getHumanReadableOptions() {
 		String optionsDescription = "";
 		int i = 0;
 		for (RewardChoice option: options) {

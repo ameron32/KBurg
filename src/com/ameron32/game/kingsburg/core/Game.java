@@ -441,7 +441,7 @@ public class Game implements PlayerProxyListener {
 		
 		if (rewardChoice == null) {
 			//player has skipped the turn
-			printer.log(player, "has skipped the turn.\n");
+			printer.log(player, "has skipped the turn.");
 			return;
 		}
 

@@ -8,14 +8,14 @@ public class MainAdvisorTests {
 	static BasicRandomizer rand;
 	
 	public static void main(String[] args) throws java.lang.Exception {
-		wall = new WallOfAdvisors();
+		wall = WallOfAdvisors.get();
 		rand = BasicRandomizer.get();
 		
 		_advisorsInOrder();
 	}
 	
 	private static void _listOfAdvisors() {
-		List<Advisor> advisors = new WallOfAdvisors().getAdvisors();
+		List<Advisor> advisors = wall.getAdvisors();
 		for (Advisor a : advisors) {
 			System.out.println(a);
 		}

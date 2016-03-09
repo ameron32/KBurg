@@ -49,7 +49,10 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 				// this bot doesn't care
 			}
 			
-			choose(roll, board, stuff);
+			boolean successful = choose(roll, board, stuff);
+			if (!successful) {
+				Printer.get().log("     'I feel like I had options, but I gave up.' says Player " + (stuff.getPlayerId()+1) + ".\n");
+			}
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -220,16 +223,17 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	
 	
 
-	private void choose(Roll roll, Board board, PlayerStuff stuff) {
+	private boolean choose(Roll roll, Board board, PlayerStuff stuff) {
 		// grab first option carelessly
 		int optionChosen = 1;
 		int rollTotal = roll.getUnusedTotal();
 		if (rollTotal <= 18) {
 			// try to use all the dice at the same time
-			Advisor advisor = WallOfAdvisors.getAdvisorFor(roll.getUnusedTotal());
+			Advisor advisor = WallOfAdvisors.get().getAdvisorFor(roll.getUnusedTotal());
 			if (canUse(advisor, board)) {
 				emptyRemainingDice(roll);
 				select(advisor, optionChosen);
+				return true;
 			} else {
 				// that advisor is already taken, so Envoy if possible...
 				if (stuff.hasEnvoy()) {
@@ -237,14 +241,15 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 					stuff.useEnvoy();
 					emptyRemainingDice(roll);
 					select(advisor, optionChosen);
+					return true;
 				} else {
 					// ... or change advisor choice to a single dice.
 					Printer.get().log("     'Curses, my advisor was reserved!' says Player " + (stuff.getPlayerId()+1) + ".");
-					useFirstDiceOnly(roll, board, stuff);
+					return useFirstDiceOnly(roll, board, stuff);
 				}
 			}			
 		} else {
-			useFirstDiceOnly(roll, board, stuff);
+			return useFirstDiceOnly(roll, board, stuff);
 		}
 	}
 	
@@ -264,7 +269,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 		return true;
 	}
 	
-	private void useFirstDiceOnly(Roll roll, Board board, PlayerStuff stuff) {
+	private boolean useFirstDiceOnly(Roll roll, Board board, PlayerStuff stuff) {
 		// use the first dice with a plus 2 (if available)
 		int diePosition = 0;
 		Long die = roll.getUnusedStandardDice().get(diePosition);
@@ -279,7 +284,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 		}
 		
 		// ADVISOR SELECTION AND COMPENSATION
-		Advisor advisor = WallOfAdvisors.getAdvisorFor(advisorTotal);
+		Advisor advisor = WallOfAdvisors.get().getAdvisorFor(advisorTotal);
 		if (canUse(advisor, board)) {
 			RewardChoice rewardChoice = advisor.getOptions().get(0);
 			// use dice
@@ -289,7 +294,9 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 			Printer.get().log("     'But--another one taken?... oh, I pass!' says Player " + (stuff.getPlayerId()+1) + ".");
 			emptyRemainingDice(roll);
 			skipTurn();
+			return false;
 		}
+		return true;
 	}
 	
 	private void emptyRemainingDice(Roll myRoll) {

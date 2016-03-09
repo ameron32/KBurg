@@ -11,8 +11,18 @@ import java.util.List;
  */
 public class WallOfAdvisors {
 	
-	private static final List<Advisor> advisors = new ArrayList<>(18);
-	static {
+	private static WallOfAdvisors INSTANCE;
+	
+	public static WallOfAdvisors get() {
+		if (INSTANCE == null) {
+			INSTANCE = new WallOfAdvisors();
+		}
+		return INSTANCE;
+	}
+	
+	private final List<Advisor> advisors;
+	public WallOfAdvisors() {
+		advisors = new ArrayList<>(18);
 		advisors.add(new Advisor("Jester", 1, 
 				MakeReward.withReward().points(1).make()));
 		advisors.add(new Advisor("Squire", 2, 
@@ -55,10 +65,12 @@ public class WallOfAdvisors {
 		advisors.add(new Advisor("King", 18,
 				MakeReward.withReward().gold(1).wood(1).stone(1).soldier(1).make()));
 	}
-	static List<Advisor> getAdvisors() {
+	
+	public List<Advisor> getAdvisors() {
 		return advisors;
 	}
-	static Advisor getAdvisorFor(int number) {
+	
+	public Advisor getAdvisorFor(int number) {
 		//returns FIRST advisor to match the number
 		for (Advisor advisor : getAdvisors()) {
 			if (advisor.getOrdinal() == number) {
