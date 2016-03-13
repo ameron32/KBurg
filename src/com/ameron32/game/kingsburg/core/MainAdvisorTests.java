@@ -1,4 +1,7 @@
 package com.ameron32.game.kingsburg.core;
+import com.ameron32.game.kingsburg.core.advisor.Advisor;
+import com.ameron32.game.kingsburg.core.advisor.WallOfAdvisors;
+
 import java.util.List;
 
 

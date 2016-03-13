@@ -1,4 +1,8 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.state;
+import com.ameron32.game.kingsburg.core.BasicRandomizer;
+import com.ameron32.game.kingsburg.core.advisor.MakeReward;
+import com.ameron32.game.kingsburg.core.advisor.RewardChoice;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -201,7 +205,7 @@ public class EnemyDeck {
 		}
 	}
 	
-	EnemyCard getCard(int year) {
+	public EnemyCard getCard(int year) {
 		return enemyDeck[year - 1];
 	}
 	

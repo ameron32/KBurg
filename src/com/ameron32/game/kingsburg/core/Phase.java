@@ -40,11 +40,11 @@ public class Phase {
 		return isProductive;
 	}
 
-	public boolean gainsAid() {
+	public boolean isGainsAid() {
 		return isAid;
 	}
 	
-	public boolean usesAid() {
+	public boolean isLosesAid() {
 		return usesAid;
 	}
 

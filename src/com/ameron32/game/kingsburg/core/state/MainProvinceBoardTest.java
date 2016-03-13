@@ -1,4 +1,6 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.state;
+
+import com.ameron32.game.kingsburg.core.state.ProvinceBoard;
 
 public class MainProvinceBoardTest {
 

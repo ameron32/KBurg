@@ -1,8 +1,10 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.local;
+
+import com.ameron32.game.kingsburg.core.state.PlayerStuff;
 
 public class LocalPlayerStuff extends PlayerStuff {
 
-	LocalPlayerStuff(int playerId) {
+	public LocalPlayerStuff(int playerId) {
 		super(playerId);
 	}
 

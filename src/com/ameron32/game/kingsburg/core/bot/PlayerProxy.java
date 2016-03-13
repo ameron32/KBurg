@@ -1,4 +1,8 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.bot;
+
+import com.ameron32.game.kingsburg.core.Roll;
+import com.ameron32.game.kingsburg.core.state.Board;
+import com.ameron32.game.kingsburg.core.state.PlayerStuff;
 
 public interface PlayerProxy {
 

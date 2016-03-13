@@ -1,4 +1,4 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.advisor;
 
 /**
  * 
@@ -6,6 +6,11 @@ package com.ameron32.game.kingsburg.core;
  * 
  */
 public class Reward {
+
+	public static Reward make(int gold, int wood, int stone) {
+		return new Reward(gold, wood, stone);
+	}
+
 	private int gold, wood, stone;
 	private int points = 0;
 	private int choose = 0;

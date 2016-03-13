@@ -2,17 +2,37 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39d8a9dc-31e0-4bee-b82c-f30785ab7b39" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/BoardTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Advisor.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Advisor.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/BasicBotPlayerProxy.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/BasicBotPlayerProxy.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Board.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/Board.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/BoardTest.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/BoardTest.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Cost.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Cost.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/DummyBotPlayerProxy.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/DummyBotPlayerProxy.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/EnemyCard.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/EnemyCard.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/EnemyDeck.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/EnemyDeck.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/JavaLogger.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/local/JavaLogger.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/LocalBoard.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/local/LocalBoard.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/LocalPlayerStuff.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/local/LocalPlayerStuff.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainProvinceBoardTest.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/MainProvinceBoardTest.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MakeReward.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/MakeReward.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PlayerProxy.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/PlayerProxy.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PlayerProxyListener.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/PlayerProxyListener.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PlayerStuff.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/PlayerStuff.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/ProvinceBoard.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/ProvinceBoard.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/ProvinceBuilding.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/ProvinceBuilding.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Reward.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Reward.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/RewardChoice.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/RewardChoice.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/SuperBotPlayerProxy.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/SuperBotPlayerProxy.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/WallOfAdvisors.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/WallOfAdvisors.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/KBurg.iml" afterPath="$PROJECT_DIR$/KBurg.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Advisor.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Advisor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/BasicBotPlayerProxy.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/BasicBotPlayerProxy.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainAdvisorTests.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainAdvisorTests.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/ProvinceBuilding.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/ProvinceBuilding.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/WallOfAdvisors.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/WallOfAdvisors.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainGameLoopTest.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainGameLoopTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainGameStateTest.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainGameStateTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Phase.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Phase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PhaseHandler.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PhaseHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PlayerComparison.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PlayerComparison.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Printer.java" afterPath="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Printer.java" />
     </list>
     <ignored path="KBurg.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -33,62 +53,26 @@
     <favorites_list name="KBurg" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="Game.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.8">
+              <caret line="182" column="26" selection-start-line="182" selection-start-column="26" selection-end-line="182" selection-end-column="26" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#30865#30866#0" expanded="true" />
+                <element signature="e#30911#30912#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="MainGameStateTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainGameStateTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Advisor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Advisor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="9" column="14" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Board.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Board.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.24548736">
-              <caret line="10" column="3" selection-start-line="10" selection-start-column="3" selection-end-line="10" selection-end-column="3" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PlayerStuff.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PlayerStuff.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="19" column="23" selection-start-line="19" selection-start-column="23" selection-end-line="19" selection-end-column="23" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Game.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="23" column="21" selection-start-line="23" selection-start-column="21" selection-end-line="23" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BoardTest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/BoardTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="28" column="51" selection-start-line="28" selection-start-column="51" selection-end-line="28" selection-end-column="51" />
+            <state vertical-scroll-proportion="-3.6363637">
+              <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -100,6 +84,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JUnit4 Test Class" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -117,14 +102,46 @@
       <list>
         <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/AdvisorTest.java" />
         <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/BoardTest.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Advisor.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/WallOfAdvisors.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MakeReward.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/MakeReward.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Cost.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/ProvinceBoard.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/local/LocalBoard.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/local/JavaLogger.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/EnemyCard.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/DummyBotPlayerProxy.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/SuperBotPlayerProxy.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/PlayerProxy.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/PlayerProxyListener.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Reward.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/BasicBotPlayerProxy.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/local/LocalPlayerStuff.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/MainProvinceBoardTest.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/BoardTest.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PhaseHandler.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/ProvinceBuilding.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/PlayerStuff.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/EnemyDeck.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/RewardChoice.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/Board.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainGameStateTest.java" />
+        <option value="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java" />
       </list>
     </option>
   </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Bundled (Maven 3)" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="9" />
-    <option name="y" value="674" />
-    <option name="width" value="1030" />
-    <option name="height" value="1000" />
+    <option name="y" value="27" />
+    <option name="width" value="1280" />
+    <option name="height" value="773" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -151,7 +168,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -160,48 +176,23 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="KBurg" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="KBurg" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="KBurg" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="KBurg" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Font" />
     <property name="last_opened_file_path" value="$USER_HOME$/AppData/Local/GitHub/PortableGit_cf76fc1621ac41ad4fe86c420ab5ff403f1808b9/mingw32/libexec/git-core/git.exe" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
+    <property name="extract.method.default.visibility" value="private" />
+    <property name="SearchEverywhereHistoryKey" value="JavaL&#9;FILE&#9;file:///home/klemeilleur/IdeaProjects/KBurg/src/com/ameron32/game/kingsburg/core/local/JavaLogger.java&#10;board&#9;FILE&#9;file:///home/klemeilleur/IdeaProjects/KBurg/src/com/ameron32/game/kingsburg/core/state/Board.java" />
   </component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.RecentsKey">
@@ -209,6 +200,13 @@
     </key>
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state" />
+      <recent name="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot" />
+      <recent name="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/local" />
+      <recent name="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor" />
+      <recent name="$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core" />
     </key>
   </component>
   <component name="RunManager" selected="Application.MainGameLoopTest">
@@ -483,11 +481,30 @@
       <envs />
       <method />
     </configuration>
-    <list size="1">
+    <configuration default="false" name="MainGameStateTest" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" value="com.ameron32.game.kingsburg.core.MainGameStateTest" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="KBurg" />
+      <envs />
+      <method />
+    </configuration>
+    <list size="2">
       <item index="0" class="java.lang.String" itemvalue="Application.MainGameLoopTest" />
+      <item index="1" class="java.lang.String" itemvalue="Application.MainGameStateTest" />
     </list>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="39d8a9dc-31e0-4bee-b82c-f30785ab7b39" name="Default" comment="" />
@@ -498,32 +515,40 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="9" y="674" width="1030" height="1000" extended-state="0" />
+    <frame x="0" y="27" width="1280" height="773" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32949308" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26082474" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32917318" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32917318" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.53084415" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20373377" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32917318" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
@@ -537,10 +562,114 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/BoardTest.java">
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="28" column="51" selection-start-line="28" selection-start-column="51" selection-end-line="28" selection-end-column="51" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#30865#30866#0" expanded="true" />
+            <element signature="e#30911#30912#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainGameStateTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="32" column="5" selection-start-line="32" selection-start-column="5" selection-end-line="32" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#30865#30866#0" expanded="true" />
+            <element signature="e#30911#30912#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#30865#30866#0" expanded="true" />
+            <element signature="e#30911#30912#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#30865#30866#0" expanded="true" />
+            <element signature="e#30911#30912#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Advisor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="9" column="14" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/Board.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="10" column="3" selection-start-line="10" selection-start-column="3" selection-end-line="10" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/PlayerStuff.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="19" column="23" selection-start-line="19" selection-start-column="23" selection-end-line="19" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#30865#30866#0" expanded="true" />
+            <element signature="e#30911#30912#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Advisor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="9" column="14" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/Board.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/PlayerStuff.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="19" column="23" selection-start-line="19" selection-start-column="23" selection-end-line="19" selection-end-column="23" />
           <folding />
         </state>
       </provider>
@@ -549,39 +678,234 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="23" column="21" selection-start-line="23" selection-start-column="21" selection-end-line="23" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#30865#30866#0" expanded="true" />
+            <element signature="e#30911#30912#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/BoardTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="28" column="51" selection-start-line="28" selection-start-column="51" selection-end-line="28" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Advisor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/WallOfAdvisors.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="10.0625">
+          <caret line="26" column="43" selection-start-line="26" selection-start-column="43" selection-end-line="26" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Cost.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.28596187">
+          <caret line="11" column="43" selection-start-line="11" selection-start-column="43" selection-end-line="11" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/ProvinceBoard.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="229" column="20" selection-start-line="229" selection-start-column="20" selection-end-line="229" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/local/LocalBoard.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/MakeReward.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.3606558">
+          <caret line="104" column="15" selection-start-line="104" selection-start-column="15" selection-end-line="104" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/EnemyCard.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PlayerStuff.java">
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/DummyBotPlayerProxy.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="19" column="23" selection-start-line="19" selection-start-column="23" selection-end-line="19" selection-end-column="23" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/PlayerProxyListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/SuperBotPlayerProxy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/Reward.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.878788">
+          <caret line="10" column="19" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/local/LocalPlayerStuff.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="6" column="11" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/MainProvinceBoardTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/BoardTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Phase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3327869">
+          <caret line="46" column="19" selection-start-line="46" selection-start-column="19" selection-end-line="46" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/BasicBotPlayerProxy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5409836">
+          <caret line="221" column="0" selection-start-line="221" selection-start-column="0" selection-end-line="221" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Advisor.java">
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/ProvinceBuilding.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9508197">
+          <caret line="75" column="0" selection-start-line="75" selection-start-column="0" selection-end-line="75" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/PlayerStuff.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="9" column="14" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/EnemyDeck.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/advisor/RewardChoice.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.114754096">
+          <caret line="87" column="11" selection-start-line="87" selection-start-column="11" selection-end-line="87" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/PhaseHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9480069">
+          <caret line="53" column="0" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/state/Board.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3327869">
+          <caret line="14" column="16" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/bot/PlayerProxy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.25081968">
+          <caret line="11" column="9" selection-start-line="11" selection-start-column="9" selection-end-line="11" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Roll.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="5.4461155">
+          <caret line="139" column="15" selection-start-line="139" selection-start-column="15" selection-end-line="139" selection-end-column="15" />
+          <folding>
+            <element signature="e#3466#3467#0" expanded="true" />
+            <element signature="e#3486#3487#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/local/JavaLogger.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.556391">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Logger.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2556391">
+          <caret line="6" column="9" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="9" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/MainGameStateTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        <state vertical-scroll-proportion="-3.6363637">
+          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Board.java">
+    <entry file="file://$PROJECT_DIR$/src/com/ameron32/game/kingsburg/core/Game.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.24548736">
-          <caret line="10" column="3" selection-start-line="10" selection-start-column="3" selection-end-line="10" selection-end-column="3" />
-          <folding />
+        <state vertical-scroll-proportion="0.8">
+          <caret line="182" column="26" selection-start-line="182" selection-start-column="26" selection-end-line="182" selection-end-column="26" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#30865#30866#0" expanded="true" />
+            <element signature="e#30911#30912#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

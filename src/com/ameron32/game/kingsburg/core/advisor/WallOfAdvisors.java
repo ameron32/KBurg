@@ -1,6 +1,6 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.advisor;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

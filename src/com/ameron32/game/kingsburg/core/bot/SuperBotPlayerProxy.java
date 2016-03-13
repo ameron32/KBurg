@@ -1,4 +1,9 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.bot;
+
+import com.ameron32.game.kingsburg.core.Roll;
+import com.ameron32.game.kingsburg.core.advisor.Advisor;
+import com.ameron32.game.kingsburg.core.state.Board;
+import com.ameron32.game.kingsburg.core.state.PlayerStuff;
 
 import java.util.List;
 
@@ -42,7 +47,7 @@ public class SuperBotPlayerProxy implements PlayerProxy {
 	 * then it considers what options it does have picks at random. (Keep in
 	 * mind this is first influence pick of the game.) If it's able to build, it
 	 * does. Then in the next season let's say it has 1 stone and a palisade.
-	 * Let’s say it obtains 1 gold. Now it is on its way to build a stable, BUT
+	 * Letï¿½s say it obtains 1 gold. Now it is on its way to build a stable, BUT
 	 * it has what it needs RIGHT NOW to build a guard tower. We can say that a
 	 * tier 1 building that can be built NOW is equal in priority to a tier 2
 	 * building that can maybe be built in the next productive season. When the
@@ -65,7 +70,7 @@ public class SuperBotPlayerProxy implements PlayerProxy {
 		 * information, it checks to see what options are possible on the board,
 		 * then checks to see if any of these options have been taken by other
 		 * players (unless it has the envoy). Then it has to decide, of these
-		 * options, what is the best choice for it’s goals.
+		 * options, what is the best choice for itï¿½s goals.
 		 */
 		int totalOfRemainingDice = roll.getUnusedTotal();
 		List<Long> unusedStandardDice = roll.getUnusedStandardDice();
@@ -88,7 +93,7 @@ public class SuperBotPlayerProxy implements PlayerProxy {
 	}
 	
 	private void removeReservedAdvisors(List<Integer> advisorOptions, boolean hasEnvoy) {
-		// if hasEnvoy, don’t remove the advisors
+		// if hasEnvoy, donï¿½t remove the advisors
 		if (hasEnvoy) {
 			return;
 		}

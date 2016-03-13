@@ -1,4 +1,6 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.state;
+import com.ameron32.game.kingsburg.core.advisor.Cost;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -235,7 +237,7 @@ public class ProvinceBoard {
 		}
 		int woodCost = buildingBlueprint.getWoodCost();
 		int stoneCost = buildingBlueprint.getStoneCost();
-		return new Cost(goldCost, woodCost, stoneCost);
+		return Cost.make(goldCost, woodCost, stoneCost);
 	}
 	
 	private boolean hasBuilding(int row, int column) {

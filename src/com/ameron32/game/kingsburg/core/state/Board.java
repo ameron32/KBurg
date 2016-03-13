@@ -1,4 +1,4 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.state;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,60 +26,60 @@ public abstract class Board {
 		super();
 	}
 	
-	void initialize(int players) {
+	public void initialize(int players) {
 		soldiers = new int[players];
 		currentPhase = 0;
 		currentYear = 0;
 		pushUpdate();
 	}
 
-	void incrementYear() {
+	public void incrementYear() {
 		currentYear++;
 		pushUpdate();
 	}
 
-	void incrementPhase() {
+	public void incrementPhase() {
 		currentPhase++;
 		pushUpdate();
 	}
 	
-	void addKingsReinforcements(int qty) {
+	public void addKingsReinforcements(int qty) {
 		for (int i = 0; i < soldiers.length; i++) {
 			soldiers[i] = soldiers[i] + qty;
 		}
 		pushUpdate();
 	}
 	
-	void increaseSoldiers(int player, int qty) {
+	public void increaseSoldiers(int player, int qty) {
 		soldiers[player] = soldiers[player] + qty;
 		pushUpdate();
 	}
 	
-	int getSoldiersFor(int player) {
+	public int getSoldiersFor(int player) {
 		pullSynchronize();
 		return soldiers[player];
 	}
 	
-	void resetSoldiers() {
+	public void resetSoldiers() {
 		for (int i = 0; i < soldiers.length; i++) {
 			soldiers[i] = 0;
 		}
 		pushUpdate();
 	}
 	
-	void reserveAdvisor(int ordinal) {
+	public void reserveAdvisor(int ordinal) {
 		int position = ordinal - 1;
 		reservedAdvisors[position] = true;
 		pushUpdate();
 	}
 	
-	boolean isAdvisorReserved(int ordinal) {
+	public boolean isAdvisorReserved(int ordinal) {
 		pullSynchronize();
 		int position = ordinal - 1;
 		return reservedAdvisors[position];
 	}
 
-	void resetAdvisors() {
+	public void resetAdvisors() {
 		reservedAdvisors = new boolean[18];
 		pushUpdate();
 	}

@@ -1,5 +1,8 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.state;
 
+
+import com.ameron32.game.kingsburg.core.advisor.Cost;
+import com.ameron32.game.kingsburg.core.advisor.Reward;
 
 /**
  * 
@@ -22,56 +25,56 @@ public abstract class PlayerStuff {
 	private boolean hasAid;
 	private ProvinceBoard province;
 	
-	PlayerStuff(int playerId) {
+	protected PlayerStuff(int playerId) {
 		this.playerId = playerId;
 		province = new ProvinceBoard();
 	}
 	
-	int getPlayerId() { return playerId; }
+	public int getPlayerId() { return playerId; }
 	
-	boolean hasAid() { return hasAid; }	
-	boolean hasEnvoy() { return hasEnvoy; }
+	public boolean hasAid() { return hasAid; }	
+	public boolean hasEnvoy() { return hasEnvoy; }
 	
-	void gainEnvoy() { hasEnvoy = true; }
-	void gainAid() { hasAid = true; }
-	void useEnvoy() { hasEnvoy = false; }
-	void useAid() { hasAid = false; }
+	public void gainEnvoy() { hasEnvoy = true; }
+	public void gainAid() { hasAid = true; }
+	public void useEnvoy() { hasEnvoy = false; }
+	public void useAid() { hasAid = false; }
 	
-	int countUnchosenResources() { return unchosenResources; }
-	int countUnpaidDebts() { return unpaidResources; }
-	int countWood() { return wood; }
-	int countGold() { return gold; }
-	int countStone() { return stone; }
-	int countPlus2() { return plus2; }
-	int countPoints() { return points; }
+	public int countUnchosenResources() { return unchosenResources; }
+	public int countUnpaidDebts() { return unpaidResources; }
+	public int countWood() { return wood; }
+	public int countGold() { return gold; }
+	public int countStone() { return stone; }
+	public int countPlus2() { return plus2; }
+	public int countPoints() { return points; }
 	
-	void spendUnpaidDebt(int qty) { unpaidResources = unpaidResources + qty; }
-	void spendPoints(int qty) { points = points - qty; }
-	void spendWood(int qty) { 
+	public void spendUnpaidDebt(int qty) { unpaidResources = unpaidResources + qty; }
+	public void spendPoints(int qty) { points = points - qty; }
+	public void spendWood(int qty) { 
 		wood = wood - qty;
 		if (wood < 0) { wood = 0; }
 	}
-	void spendGold(int qty) { 
+	public void spendGold(int qty) { 
 		gold = gold - qty; 
 		if (gold < 0) { gold = 0; }
 	}
-	void spendStone(int qty) { 
+	public void spendStone(int qty) { 
 		stone = stone - qty;
 		if (stone < 0) { stone = 0; }
 	}
-	void usePlus2() { plus2--; }
+	public void usePlus2() { plus2--; }
 	
-	void clearUnchosenResources() { unchosenResources = 0; }
-	void clearUnpaidDebts() { unpaidResources = 0; }
+	public void clearUnchosenResources() { unchosenResources = 0; }
+	public void clearUnpaidDebts() { unpaidResources = 0; }
 	
-	void gainUnchosenResources(int qty) { unchosenResources = unchosenResources + qty; }
-	void gainPoints(int qty) { points = points + qty; }
-	void gainWood(int qty) { wood = wood + qty; }
-	void gainGold(int qty) { gold = gold + qty; }
-	void gainStone(int qty) { stone = stone + qty; }
-	void gainPlus2(int qty) { plus2 = plus2 + qty; }
+	public void gainUnchosenResources(int qty) { unchosenResources = unchosenResources + qty; }
+	public void gainPoints(int qty) { points = points + qty; }
+	public void gainWood(int qty) { wood = wood + qty; }
+	public void gainGold(int qty) { gold = gold + qty; }
+	public void gainStone(int qty) { stone = stone + qty; }
+	public void gainPlus2(int qty) { plus2 = plus2 + qty; }
 	
-	boolean canPayCost(Cost cost) {
+	public boolean canPayCost(Cost cost) {
 		// can have negative points!
 		int gold = cost.getGold();
 		int stone = cost.getStone();
@@ -89,14 +92,14 @@ public abstract class PlayerStuff {
 		return true;
 	}
 	
-	void payCost(Cost cost) {
+	public void payCost(Cost cost) {
 		spendWood(cost.getWood());
 		spendGold(cost.getGold());
 		spendStone(cost.getStone());
 		spendPoints(cost.getPoints());
 	}
 
-	void receiveReward(Reward reward) {
+	public void receiveReward(Reward reward) {
 		gainWood(reward.getWood());
 		gainGold(reward.getGold());
 		gainStone(reward.getStone());
@@ -106,7 +109,7 @@ public abstract class PlayerStuff {
 	}
 
 	// DOES NOT INCLUDE UNCHOSEN RESOURCES OR UNPAID RESOURCES
-	int countResources() {
+	public int countResources() {
 		int count = 0;
 		count += countWood();
 		count += countGold();
@@ -120,95 +123,95 @@ public abstract class PlayerStuff {
 	//
 	// PROVINCE BOARD PROXY
 	//
-	boolean hasStatue() {
+	public boolean hasStatue() {
 		return province.hasBuilding("Statue");
 	}
 	
-	boolean hasChapel() {
+	public boolean hasChapel() {
 		return province.hasBuilding("Chapel");
 	}
 	
-	boolean hasChurch() {
+	public boolean hasChurch() {
 		return province.hasBuilding("Church");
 	}
 	
-	boolean hasCathedral() {
+	public boolean hasCathedral() {
 		return province.hasBuilding("Cathedral");
 	}
 	
-	boolean hasInn() {
+	public boolean hasInn() {
 		return province.hasBuilding("Inn");
 	}
 	
-	boolean hasMarket() {
+	public boolean hasMarket() {
 		return province.hasBuilding("Market");
 	}
 	
-	boolean hasFarms() {
+	public boolean hasFarms() {
 		return province.hasBuilding("Farms");
 	}
 	
-	boolean hasMerchantsGuild() {
+	public boolean hasMerchantsGuild() {
 		return province.hasBuilding("Merchants' Guild");
 	}
 	
-	boolean hasGuardTower() {
+	public boolean hasGuardTower() {
 		return province.hasBuilding("Guard Tower");
 	}
 	
-	boolean hasBlacksmith() {
+	public boolean hasBlacksmith() {
 		return province.hasBuilding("Blacksmith");
 	}
 	
-	boolean hasBarracks() {
+	public boolean hasBarracks() {
 		return province.hasBuilding("Barracks");
 	}
 	
-	boolean hasWizardsGuild() {
+	public boolean hasWizardsGuild() {
 		return province.hasBuilding("Wizards' Guild");
 	}
 	
-	boolean hasPalisade() {
+	public boolean hasPalisade() {
 		return province.hasBuilding("Palisade");
 	}
 	
-	boolean hasStable() {
+	public boolean hasStable() {
 		return province.hasBuilding("Stable");
 	}
 	
-	boolean hasStoneWall() {
+	public boolean hasStoneWall() {
 		return province.hasBuilding("Stone Wall");
 	}
 	
-	boolean hasFortress() {
+	public boolean hasFortress() {
 		return province.hasBuilding("Fortress");
 	}
 	
-	boolean hasBarricade() {
+	public boolean hasBarricade() {
 		return province.hasBuilding("Barricade");
 	}
 	
-	boolean hasCrane() {
+	public boolean hasCrane() {
 		return province.hasBuilding("Crane");
 	}
 	
-	boolean hasTownHall() {
+	public boolean hasTownHall() {
 		return province.hasBuilding("Town Hall");
 	}
 	
-	boolean hasEmbassy() {
+	public boolean hasEmbassy() {
 		return province.hasBuilding("Embassy");
 	}
 	
-	int countBuildings() {
+	public int countBuildings() {
 		return province.countBuildings();
 	}
 	
-	boolean canAffordNextBuilding(int row) {
+	public boolean canAffordNextBuilding(int row) {
 		return province.canAffordNextBuilding(row, countGold(), countWood(), countStone(), hasCrane());
 	}
 	
-	ProvinceBuilding buyNextBuilding(int row) {
+	public ProvinceBuilding buyNextBuilding(int row) {
 		Cost cost = province.getCostOfNextBuilding(row, hasCrane());
 		spendGold(cost.getGold());
 		spendWood(cost.getWood());
@@ -216,7 +219,7 @@ public abstract class PlayerStuff {
 		return province.buyNextBuilding(row, hasCrane());
 	}
 	
-	ProvinceBuilding loseABuilding() {
+	public ProvinceBuilding loseABuilding() {
 		return province.loseBestBuilding();
 	}
 

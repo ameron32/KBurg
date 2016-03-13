@@ -1,4 +1,4 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.state;
 import java.util.Arrays;
 
 
@@ -37,39 +37,39 @@ public class ProvinceBuilding {
 	
 	// TODO fancy handling like Statue dice re-roll mechanisms
 	
-	int getRow() {
+	public int getRow() {
 		return row;
 	}
 
-	int getColumn() {
+	public int getColumn() {
 		return column;
 	}
 
-	int getPoints() {
+	public int getPoints() {
 		return points;
 	}
 
-	int getGoldCost() {
+	public int getGoldCost() {
 		return goldWoodStoneCost[0];
 	}
 
-	int getWoodCost() {
+	public int getWoodCost() {
 		return goldWoodStoneCost[1];
 	}
 
-	int getStoneCost() {
+	public int getStoneCost() {
 		return goldWoodStoneCost[2];
 	}
 
-	String getName() {
+	public String getName() {
 		return name;
 	}
 
-	String getDescription() {
+	public String getDescription() {
 		return description;
 	}
 	
-	boolean is(String name) {
+	public boolean is(String name) {
 		return (name.equalsIgnoreCase(getName()));
 	}
 }

@@ -7,8 +7,8 @@ public class PhaseHandler {
 	
 	private static final String PRODUCTIVE_SUMMER_NAME = "Summer Season";
 
-	static List<Phase> phases = new ArrayList<>(8);
-	static {
+	List<Phase> phases = new ArrayList<>(8);
+	PhaseHandler() {
 		phases.add(Phase.Builder.of()
 				.name("Aid From the King")
 				.ordinal(1).gainsAid().make());
@@ -34,7 +34,8 @@ public class PhaseHandler {
 				.name("Winter Season")
 				.ordinal(8).battle().make());
 	}
-	static Phase getPhase(int ordinal) {
+
+	Phase getPhase(int ordinal) {
 		for (Phase phase : phases) {
 			if (phase.getOrdinal() == ordinal) {
 				return phase;
@@ -42,10 +43,10 @@ public class PhaseHandler {
 		}
 		return null;
 	}
-	static int getPhaseCount() {
+	int getPhaseCount() {
 		return phases.size();
 	}
-	static boolean isSummer(Phase phase) {
+	boolean isSummer(Phase phase) {
 		return (phase.getName().equalsIgnoreCase(PRODUCTIVE_SUMMER_NAME));
 	}
 	

@@ -1,4 +1,4 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.advisor;
 
 /**
  * 
@@ -65,7 +65,7 @@ public class RewardChoice {
 		}
 	}
 	
-	String getHumanReadableReward() {
+	public String getHumanReadableReward() {
 		String rewards = "reward(s): ";
 		for (int i = 0; i < 9; i++) {
 			if (reward_point_gold_wood_stone_choose_soldier_plus2_peek[i] != 0) {
@@ -85,7 +85,7 @@ public class RewardChoice {
 		return rewards;
 	}
 	
-	boolean hasAnyCost() {
+	public boolean hasAnyCost() {
 		for (int i : cost_point_gold_wood_stone_choose) {
 			if (i != 0) { 
 				return true; 
@@ -94,7 +94,7 @@ public class RewardChoice {
 		return false;
 	}
 	
-	Cost getCost() {
+	public Cost getCost() {
 		int point = cost_point_gold_wood_stone_choose[0];
 		int gold = cost_point_gold_wood_stone_choose[1];
 		int wood = cost_point_gold_wood_stone_choose[2];
@@ -103,7 +103,7 @@ public class RewardChoice {
 		return new Cost(gold, wood, stone, point, choose);
 	}
 	
-	Reward getReward() {
+	public Reward getReward() {
 		int point = reward_point_gold_wood_stone_choose_soldier_plus2_peek[0];
 		int gold = reward_point_gold_wood_stone_choose_soldier_plus2_peek[1];
 		int wood = reward_point_gold_wood_stone_choose_soldier_plus2_peek[2];

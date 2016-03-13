@@ -1,5 +1,7 @@
 package com.ameron32.game.kingsburg.core;
 
+import com.ameron32.game.kingsburg.core.local.JavaLogger;
+
 public class Printer {
 	
 	public static boolean debugOn = true;

@@ -1,4 +1,6 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.local;
+
+import com.ameron32.game.kingsburg.core.state.Board;
 
 public class LocalBoard extends Board {
 

@@ -1,4 +1,11 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.bot;
+import com.ameron32.game.kingsburg.core.Roll;
+import com.ameron32.game.kingsburg.core.advisor.Advisor;
+import com.ameron32.game.kingsburg.core.advisor.Cost;
+import com.ameron32.game.kingsburg.core.advisor.Reward;
+import com.ameron32.game.kingsburg.core.advisor.RewardChoice;
+import com.ameron32.game.kingsburg.core.state.ProvinceBuilding;
+
 import java.util.List;
 
 public interface PlayerProxyListener {

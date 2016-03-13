@@ -1,10 +1,11 @@
 package com.ameron32.game.kingsburg.core;
 /* package whatever; // don't place package name! */
 
-import java.util.*;
-import java.lang.*;
-import java.io.*;
+import com.ameron32.game.kingsburg.core.bot.BasicBotPlayerProxy;
+import com.ameron32.game.kingsburg.core.local.LocalBoard;
+import com.ameron32.game.kingsburg.core.local.LocalPlayerStuff;
 
+import java.lang.*;
 
 
 /* Name of the class has to be "Main" only if the class is public. */

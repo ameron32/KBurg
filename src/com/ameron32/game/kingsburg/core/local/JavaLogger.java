@@ -1,4 +1,7 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.local;
+
+import com.ameron32.game.kingsburg.core.Logger;
+import com.ameron32.game.kingsburg.core.Printer;
 
 public class JavaLogger implements Logger {
 

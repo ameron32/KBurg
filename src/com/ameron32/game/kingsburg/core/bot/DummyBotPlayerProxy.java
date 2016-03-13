@@ -1,4 +1,8 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.bot;
+
+import com.ameron32.game.kingsburg.core.Roll;
+import com.ameron32.game.kingsburg.core.state.Board;
+import com.ameron32.game.kingsburg.core.state.PlayerStuff;
 
 public class DummyBotPlayerProxy implements PlayerProxy {
 
@@ -13,8 +17,8 @@ public class DummyBotPlayerProxy implements PlayerProxy {
 // user choices.
 // ---------------------------
 // Find the corresponding instructions in the PDF rules, on page 3:
-// Phase 2: Spring – First Productive Season
-// b) Influence the King’s Advisors
+// Phase 2: Spring ï¿½ First Productive Season
+// b) Influence the Kingï¿½s Advisors
 
 	@Override
 	public void onAdvisorChoice(Roll roll, Board board, PlayerStuff stuff) {
@@ -147,7 +151,7 @@ public class DummyBotPlayerProxy implements PlayerProxy {
 // SCREEN 7: BUILD BUILDING(S)
 // ---------------------------
 // Find the corresponding instructions in the PDF rules, on page 5:
-// Phase 2: Spring – First Productive Season
+// Phase 2: Spring ï¿½ First Productive Season
 // d) Construct Buildings and Building Actions
 
 	@Override

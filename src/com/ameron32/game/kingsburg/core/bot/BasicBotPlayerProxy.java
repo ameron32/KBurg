@@ -1,4 +1,12 @@
-package com.ameron32.game.kingsburg.core;
+package com.ameron32.game.kingsburg.core.bot;
+import com.ameron32.game.kingsburg.core.Printer;
+import com.ameron32.game.kingsburg.core.Roll;
+import com.ameron32.game.kingsburg.core.advisor.*;
+import com.ameron32.game.kingsburg.core.state.Board;
+import com.ameron32.game.kingsburg.core.state.PlayerStuff;
+import com.ameron32.game.kingsburg.core.state.ProvinceBoard;
+import com.ameron32.game.kingsburg.core.state.ProvinceBuilding;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +94,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 					stoneChoice++;
 				}
 			}
-			getListener().onGoodsSelection(new Reward(goldChoice, woodChoice, stoneChoice));
+			getListener().onGoodsSelection(Reward.make(goldChoice, woodChoice, stoneChoice));
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -121,7 +129,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 					stoneChoice++;
 				}
 			}
-			getListener().onLossesSelection(new Cost(goldChoice, woodChoice, stoneChoice));
+			getListener().onLossesSelection(Cost.make(goldChoice, woodChoice, stoneChoice));
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
