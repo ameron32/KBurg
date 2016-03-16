@@ -27,7 +27,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	}
 
 	private static final int HUMAN_DELAY = 10;
-	private static final boolean SPEED_UP = true;
+	private static final boolean SLOW_DOWN = false;
 	
 	PlayerProxyListener listener;
 	int goldCount = 0;
@@ -42,7 +42,13 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	public void setListener(PlayerProxyListener listener) {
 		this.listener = listener;
 	}	
-	
+
+	private void botSlowDownLikeAHuman(boolean shouldSlowDown) throws InterruptedException {
+		if (shouldSlowDown) {
+			Thread.sleep(HUMAN_DELAY * 100);
+		}
+	}
+
 	@Override
 	public void onPeek() {
 		// do nothing but describe
@@ -56,7 +62,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	
 	protected void botChooseAdvisor(Roll roll, Board board, PlayerStuff stuff) {
 		try {
-			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 100));
+			botSlowDownLikeAHuman(SLOW_DOWN);
 			
 			// remember Market
 			if (stuff.hasMarket()) {
@@ -65,7 +71,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 			
 			boolean successful = choose(roll, board, stuff);
 			if (!successful) {
-				Printer.get().log("     'I feel like I had options, but I gave up.' says Player " + (stuff.getPlayerId()+1) + ".\n");
+				Printer.get().log("     'I feel like I had options, but I gave up, because I'm not smart.' says Player " + (stuff.getPlayerId()+1) + ".\n");
 			}
 			
 		} catch (InterruptedException e) {
@@ -82,7 +88,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	
 	protected void botChooseGoods(int unchosenResourcesCount) {
 		try {
-			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 100));
+			botSlowDownLikeAHuman(SLOW_DOWN);
 			
 			//balance the selection of resources evenly
 			int goldChoice = 0, woodChoice = 0, stoneChoice = 0;
@@ -117,7 +123,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	protected void botChooseResourcesToSpend(int unchosenLossesCount, PlayerStuff stuff) {
 		// TODO: does this AI decision REALLY make sense?
 		try {
-			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 100));
+			botSlowDownLikeAHuman(SLOW_DOWN);
 			
 			//balance the selection of resources evenly
 			int goldChoice = 0, woodChoice = 0, stoneChoice = 0;
@@ -151,7 +157,7 @@ public class BasicBotPlayerProxy implements PlayerProxy {
 	
 	protected void botDecideBuilding(PlayerStuff stuff) {
 		try {
-			Thread.sleep(HUMAN_DELAY * ((SPEED_UP) ? 1 : 100));
+			botSlowDownLikeAHuman(SLOW_DOWN);
 			
 			//build first affordable building
 			ProvinceBuilding building = null;

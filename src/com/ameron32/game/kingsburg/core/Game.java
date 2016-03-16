@@ -65,6 +65,11 @@ public class Game implements PlayerProxyListener {
 		playersStuff[player].pullSynchronize();
 		return playersStuff[player];
 	}
+
+	private List<PlayerStuff> getAllPlayersStuff() {
+
+		return Arrays.asList(playersStuff);
+	}
 	//</editor-fold>
 
 
@@ -147,7 +152,7 @@ public class Game implements PlayerProxyListener {
 			case ROLL_AND_REROLL:
 				// productive season
 				if (isProductiveSeason(phase)) {
-					for (PlayerStuff stuff : playersStuff) {
+					for (PlayerStuff stuff : getAllPlayersStuff()) {
 						int player = stuff.getPlayerId();
 						if (stuff.hasMerchantsGuild()) {
 							stuff.gainGold(1);
@@ -199,7 +204,7 @@ public class Game implements PlayerProxyListener {
 			case TOWNHALL_OPTION_AND_RECRUIT_SOLDIERS:
 				if (isProductiveSeason(phase)) {
 					if (phaseHandler.isSummer(xPhase)) {
-						for (PlayerStuff stuff : playersStuff) {
+						for (PlayerStuff stuff : getAllPlayersStuff()) {
 							int player = stuff.getPlayerId();
 							if (stuff.hasInn()) {
 								stuff.gainPlus2(1);
@@ -208,7 +213,7 @@ public class Game implements PlayerProxyListener {
 						}
 					}
 
-					for (PlayerStuff stuff : playersStuff) {
+					for (PlayerStuff stuff : getAllPlayersStuff()) {
 						int player = stuff.getPlayerId();
 						if (stuff.hasEmbassy()) {
 							stuff.gainPoints(1);
@@ -216,7 +221,7 @@ public class Game implements PlayerProxyListener {
 						}
 					}
 
-					for (PlayerStuff stuff : playersStuff) {
+					for (PlayerStuff stuff : getAllPlayersStuff()) {
 						int player = stuff.getPlayerId();
 						if (stuff.hasTownHall()) {
 							/*
@@ -270,7 +275,7 @@ public class Game implements PlayerProxyListener {
 	}
 
 	public void complete() {
-		for (PlayerStuff stuff : playersStuff) {
+		for (PlayerStuff stuff : getAllPlayersStuff()) {
 			int player = stuff.getPlayerId();
 			if (stuff.hasCathedral()) {
 				int resources = stuff.countResources();
@@ -284,7 +289,7 @@ public class Game implements PlayerProxyListener {
 		printer.log("Calculate Scores");
 
 		for (int player = 0; player < players; player++) {
-			PlayerStuff stuff = playersStuff[player];
+			PlayerStuff stuff = getPlayerStuff(player);
 			int score = stuff.countPoints();
 			printer.log("Player " + (player+1) + " scored " + score + " points.");
 		}
@@ -292,14 +297,14 @@ public class Game implements PlayerProxyListener {
 		boolean complete = false;
 		int mostPointsCount = 0;
 		List<Long> playersWithMostPoints = new ArrayList<>(5);
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			int count = p.countPoints();
 			int playerId = p.getPlayerId();
 			if (count > mostPointsCount) {
 				mostPointsCount = count;
 			}
 		}
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			if (p.countPoints() == mostPointsCount) {
 				int playerId = p.getPlayerId();
 				playersWithMostPoints.add(new Long(playerId));
@@ -324,7 +329,7 @@ public class Game implements PlayerProxyListener {
 
 			List<Long> playersWithMostPointsAndMostResources = new ArrayList<>(playerCountMostPoints);
 			for (int i = 0; i < playerCountMostPoints; i++) {
-				PlayerStuff p = playersStuff[playersWithMostPoints.get(i).intValue()];
+				PlayerStuff p = getPlayerStuff(playersWithMostPoints.get(i).intValue());
 				int count = p.countResources();
 				if (count > mostResourcesCount) {
 					mostResourcesCount = count;
@@ -332,7 +337,7 @@ public class Game implements PlayerProxyListener {
 			}
 
 			for (int i = 0; i < playerCountMostPoints; i++) {
-				PlayerStuff p = playersStuff[playersWithMostPoints.get(i).intValue()];
+				PlayerStuff p = getPlayerStuff(playersWithMostPoints.get(i).intValue());
 				if (p.countResources() == mostResourcesCount) {
 					playersWithMostPointsAndMostResources.add(new Long(p.getPlayerId()));
 				}
@@ -357,7 +362,7 @@ public class Game implements PlayerProxyListener {
 
 				List<Long> playersWithMostPointsAndMostResourcesAndMostBuildings = new ArrayList<>(playerCountMostPointsAndMostResources);
 				for (int i = 0; i < playerCountMostPointsAndMostResources; i++) {
-					PlayerStuff p = playersStuff[playersWithMostPointsAndMostResources.get(i).intValue()];
+					PlayerStuff p = getPlayerStuff(playersWithMostPointsAndMostResources.get(i).intValue());
 					int count = p.countBuildings();
 					if (count > mostBuildingsCount) {
 						mostBuildingsCount = count;
@@ -365,7 +370,7 @@ public class Game implements PlayerProxyListener {
 				}
 
 				for (int i = 0; i < playerCountMostPointsAndMostResources; i++) {
-					PlayerStuff p = playersStuff[playersWithMostPointsAndMostResources.get(i).intValue()];
+					PlayerStuff p = getPlayerStuff(playersWithMostPointsAndMostResources.get(i).intValue());
 					if (p.countResources() == mostBuildingsCount) {
 						playersWithMostPointsAndMostResourcesAndMostBuildings.add(new Long(p.getPlayerId()));
 					}
@@ -516,14 +521,14 @@ public class Game implements PlayerProxyListener {
 		boolean complete = false;
 		int leastBuildingsCount = 31000;
 		List<Long> playersWithLeastBuildings = new ArrayList<>(5);
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			int count = p.countBuildings();
 			if (count < leastBuildingsCount) {
 				leastBuildingsCount = count;
 			}
 		}
 
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			if (p.countBuildings() == leastBuildingsCount) {
 				playersWithLeastBuildings.add(new Long(p.getPlayerId()));
 			}
@@ -534,7 +539,7 @@ public class Game implements PlayerProxyListener {
 			int leastResourcesCount = 31000;
 			List<Long> playersWithLeastResources = new ArrayList<>(leastBuildingsSize);
 			for (int i = 0; i < leastBuildingsSize; i++) {
-				PlayerStuff p = playersStuff[playersWithLeastBuildings.get(i).intValue()];
+				PlayerStuff p = getPlayerStuff(playersWithLeastBuildings.get(i).intValue());
 				int count = p.countResources();
 				if (count < leastResourcesCount) {
 					leastResourcesCount = count;
@@ -542,7 +547,7 @@ public class Game implements PlayerProxyListener {
 			}
 
 			for (int i = 0; i < leastBuildingsSize; i++) {
-				PlayerStuff p = playersStuff[playersWithLeastBuildings.get(i).intValue()];
+				PlayerStuff p = getPlayerStuff(playersWithLeastBuildings.get(i).intValue());
 				if (p.countResources() == leastResourcesCount) {
 					playersWithLeastResources.add(new Long(p.getPlayerId()));
 				}
@@ -589,7 +594,7 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void recallAid() {
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			if (p.hasAid()) {
 				p.useAid();
 				int player = p.getPlayerId();
@@ -601,14 +606,14 @@ public class Game implements PlayerProxyListener {
 	private void determineReward() {
 		int mostBuildingsCount = 0;
 		List<Long> playersWithMostBuildings = new ArrayList<>(5);
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			int count = p.countBuildings();
 			if (count > mostBuildingsCount) {
 				mostBuildingsCount = count;
 			}
 		}
 
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			if (p.countBuildings() == mostBuildingsCount) {
 				playersWithMostBuildings.add(new Long(p.getPlayerId()));
 				int player = p.getPlayerId();
@@ -619,7 +624,7 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void recallEnvoy() {
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			if (p.hasEnvoy()) {
 				p.useEnvoy();
 				int player = p.getPlayerId();
@@ -633,14 +638,14 @@ public class Game implements PlayerProxyListener {
 		boolean complete = false;
 		int leastBuildingsCount = 31000;
 		List<Long> playersWithLeastBuildings = new ArrayList<>(5);
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			int count = p.countBuildings();
 			if (count < leastBuildingsCount) {
 				leastBuildingsCount = count;
 			}
 		}
 
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			if (p.countBuildings() == leastBuildingsCount) {
 				playersWithLeastBuildings.add(new Long(p.getPlayerId()));
 			}
@@ -651,7 +656,7 @@ public class Game implements PlayerProxyListener {
 			int leastResourcesCount = 31000;
 			List<Long> playersWithLeastResources = new ArrayList<>(leastBuildingsSize);
 			for (int i = 0; i < leastBuildingsSize; i++) {
-				PlayerStuff p = playersStuff[playersWithLeastBuildings.get(i).intValue()];
+				PlayerStuff p = getPlayerStuff(playersWithLeastBuildings.get(i).intValue());
 				int count = p.countResources();
 				if (count < leastResourcesCount) {
 					leastResourcesCount = count;
@@ -659,7 +664,7 @@ public class Game implements PlayerProxyListener {
 			}
 
 			for (int i = 0; i < leastBuildingsSize; i++) {
-				PlayerStuff p = playersStuff[playersWithLeastBuildings.get(i).intValue()];
+				PlayerStuff p = getPlayerStuff(playersWithLeastBuildings.get(i).intValue());
 				if (p.countResources() == leastResourcesCount) {
 					playersWithLeastResources.add(new Long(p.getPlayerId()));
 				}
@@ -724,7 +729,7 @@ public class Game implements PlayerProxyListener {
 	private boolean isAnyStatuesOrChapelsEligable() {
 		for (Roll roll : rolls) {
 			int player = roll.getPlayer();
-			PlayerStuff stuff = playersStuff[player];
+			PlayerStuff stuff = getPlayerStuff(player);
 			if (stuff.hasStatue() && roll.isStatueEligable()) {
 				return true;
 			}
@@ -744,7 +749,7 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void handleReroll(Roll roll, int player) {
-		PlayerStuff stuff = playersStuff[player];
+		PlayerStuff stuff = getPlayerStuff(player);
 		if (stuff.hasStatue() && roll.isStatueEligable()) {
 			offerUseStatue(roll, player);
 		}
@@ -820,7 +825,7 @@ public class Game implements PlayerProxyListener {
 			}
 			for (int player = 0; player < cityForces.length; player++) {
 				if (cityForces[player] == highestStrength) {
-					PlayerStuff stuff = playersStuff[player];
+					PlayerStuff stuff = getPlayerStuff(player);
 					stuff.gainPoints(1);
 					printer.log(player, "gained +1 victory point for having the most soldiers!");
 				}
@@ -854,7 +859,7 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void grantBuildingSoldierBoost(int player) {
-		PlayerStuff stuff = playersStuff[player];
+		PlayerStuff stuff = getPlayerStuff(player);
 		if (stuff.hasGuardTower()) {
 			printer.log(player, "has a Guard Tower. +1");
 			board.increaseSoldiers(player, 1);
@@ -909,7 +914,7 @@ public class Game implements PlayerProxyListener {
 
 	//<editor-fold desc="WinterBattleResults">
 	private void battleVictory(int player, EnemyCard enemy) {
-		PlayerStuff stuff = playersStuff[player];
+		PlayerStuff stuff = getPlayerStuff(player);
 		Cost cost = enemy.getVictory().getCost();
 		Reward reward = enemy.getVictory().getReward();
 		printer.log(player, "collects the victory reward of: " + reward.toString());
@@ -998,7 +1003,7 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void chooseLosses(int round, int phase, int player) {
-		getProxy(player).onChooseSpentResources(getPlayerStuff(player).countUnpaidDebts(), playersStuff[player]);
+		getProxy(player).onChooseSpentResources(getPlayerStuff(player).countUnpaidDebts(), getPlayerStuff(player));
 	}
 
 	private void offerUseStatue(Roll roll, int player) {
@@ -1016,12 +1021,12 @@ public class Game implements PlayerProxyListener {
 	private void offerConstructBuildings(int round, int phase) {
 		printer.log("");
 		for (int player = 0; player < players; player++) {
-			getProxy(player).onBuildOption(playersStuff[player]);
+			getProxy(player).onBuildOption(getPlayerStuff(player));
 		}
 	}
 
 	private void offerRecruit(int round, int phase) {
-		for (PlayerStuff p : playersStuff) {
+		for (PlayerStuff p : getAllPlayersStuff()) {
 			int player = p.getPlayerId();
 			getProxy(player).onRecruitOption(p);
 		}
@@ -1050,7 +1055,7 @@ public class Game implements PlayerProxyListener {
 			return;
 		}
 
-		PlayerStuff myStuff = playersStuff[player];
+		PlayerStuff myStuff = getPlayerStuff(player);
 		// pay the cost for the advisor (or skip the reward)
 		boolean skip = false;
 		if (rewardChoice.hasAnyCost()) {
@@ -1122,7 +1127,7 @@ public class Game implements PlayerProxyListener {
 		final int phase = board.getCurrentPhase();
 
 		if (useTownHall) {
-			PlayerStuff stuff = playersStuff[player];
+			PlayerStuff stuff = getPlayerStuff(player);
 			stuff.gainPoints(1);
 			stuff.spendUnpaidDebt(1);
 			chooseLosses(round, phase, player);
@@ -1187,7 +1192,7 @@ public class Game implements PlayerProxyListener {
 		final int round = board.getCurrentYear();
 		final int phase = board.getCurrentPhase();
 
-		PlayerStuff stuff = playersStuff[player];
+		PlayerStuff stuff = getPlayerStuff(player);
 		int recruitQty = count / 2;
 		if (stuff.hasBarracks()) {
 			recruitQty = count;
