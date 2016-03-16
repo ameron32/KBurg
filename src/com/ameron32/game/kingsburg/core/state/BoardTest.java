@@ -1,5 +1,6 @@
 package com.ameron32.game.kingsburg.core.state;
 
+import com.ameron32.game.kingsburg.core.PhaseHandler;
 import com.ameron32.game.kingsburg.core.state.Board;
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +25,7 @@ public class BoardTest {
 
     @Test
     public void testInitialize() throws Exception {
-        testBoard.initialize(5);
+        testBoard.initialize(5, new PhaseHandler().getPhaseCount());
 //        assertTrue(testBoard.soldiers.length == 5);
     }
 

@@ -1,7 +1,4 @@
 package com.ameron32.game.kingsburg.core.state;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -11,13 +8,19 @@ import java.util.List;
  */
 public abstract class Board {
 
+	// hidden indicator of current stage in phase (not on physical board)
+	private int currentStage;
+	private int turn;
+
 	// indicator of current phase
 	private int currentPhase;
+	private int phaseCount;
 	
 	// indicator of current year
 	private int currentYear;
 	
 	// number of soldiers for player
+	private int players;
 	private int[] soldiers;
 	
 	boolean[] reservedAdvisors = new boolean[18];
@@ -26,20 +29,41 @@ public abstract class Board {
 		super();
 	}
 	
-	public void initialize(int players) {
+	public void initialize(int players, int phaseCount) {
+		this.players = players;
+		this.phaseCount = phaseCount;
 		soldiers = new int[players];
 		currentPhase = 0;
 		currentYear = 0;
 		pushUpdate();
 	}
 
+	public void incrementTurn() {
+		turn++;
+		if (turn == players) {
+			turn = 0;
+		}
+		pushUpdate();
+	}
+
+	public void incrementStage() {
+		currentStage++;
+		turn = 0;
+		pushUpdate();
+	}
+
 	public void incrementYear() {
 		currentYear++;
+		currentPhase = 0;
 		pushUpdate();
 	}
 
 	public void incrementPhase() {
 		currentPhase++;
+		currentStage = 0;
+		if (currentPhase == phaseCount) {
+			incrementYear();
+		}
 		pushUpdate();
 	}
 	
@@ -86,4 +110,20 @@ public abstract class Board {
 	
 	public abstract void pullSynchronize();
 	public abstract void pushUpdate();
+
+	public int getCurrentTurn() {
+		return turn;
+	}
+
+	public int getCurrentStage() {
+		return currentStage;
+	}
+
+	public int getCurrentPhase() {
+		return currentPhase;
+	}
+
+	public int getCurrentYear() {
+		return currentYear;
+	}
 }

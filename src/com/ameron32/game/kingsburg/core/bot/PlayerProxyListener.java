@@ -10,12 +10,12 @@ import java.util.List;
 
 public interface PlayerProxyListener {
 	
-	void onAdvisorGiftSelection(Advisor advisor, RewardChoice choice);
-	void onGoodsSelection(Reward total);
-	void onLossesSelection(Cost total);
-	void onUseStatueResponse(boolean useStatue, Roll roll, int diePosition);
-	void onUseChapelResponse(boolean useChapel, Roll roll);
-	void onUseTownHallResponse(boolean useTownHall);
-	void onChooseRecruitQuantity(int count);
-	void onBuild(List<ProvinceBuilding> buildings);
+	void onAdvisorGiftSelection(int player, Advisor advisor, RewardChoice choice);
+	void onGoodsSelection(int player, Reward total);
+	void onLossesSelection(int player, Cost total);
+	void onUseStatueResponse(int player, boolean useStatue, Roll roll, int diePosition);
+	void onUseChapelResponse(int player, boolean useChapel, Roll roll);
+	void onUseTownHallResponse(int player, boolean useTownHall);
+	void onChooseRecruitQuantity(int player, int count);
+	void onBuild(int player, List<ProvinceBuilding> buildings);
 }

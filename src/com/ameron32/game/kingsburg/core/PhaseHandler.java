@@ -7,8 +7,8 @@ public class PhaseHandler {
 	
 	private static final String PRODUCTIVE_SUMMER_NAME = "Summer Season";
 
-	List<Phase> phases = new ArrayList<>(8);
-	PhaseHandler() {
+	private List<Phase> phases = new ArrayList<>(8);
+	public PhaseHandler() {
 		phases.add(Phase.Builder.of()
 				.name("Aid From the King")
 				.ordinal(1).gainsAid().make());
@@ -43,7 +43,7 @@ public class PhaseHandler {
 		}
 		return null;
 	}
-	int getPhaseCount() {
+	public int getPhaseCount() {
 		return phases.size();
 	}
 	boolean isSummer(Phase phase) {

@@ -1,14 +1,14 @@
 package com.ameron32.game.kingsburg.core;
+import com.ameron32.game.kingsburg.core.bot.PlayerProxyListener;
+import com.ameron32.game.kingsburg.core.state.Stage;
 import com.ameron32.game.kingsburg.core.advisor.Advisor;
 import com.ameron32.game.kingsburg.core.advisor.Cost;
 import com.ameron32.game.kingsburg.core.advisor.Reward;
 import com.ameron32.game.kingsburg.core.advisor.RewardChoice;
 import com.ameron32.game.kingsburg.core.bot.PlayerProxy;
-import com.ameron32.game.kingsburg.core.bot.PlayerProxyListener;
 import com.ameron32.game.kingsburg.core.state.*;
 
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * 
@@ -49,11 +49,6 @@ public class Game implements PlayerProxyListener {
 	
 	// simple enemyDeck
 	private EnemyDeck enemyDeck;
-	
-	// save state
-	private int savedRound; 
-	private int savedPhase; 
-	private int savedPlayer;
 
 
 	//
@@ -105,147 +100,173 @@ public class Game implements PlayerProxyListener {
 	
 	public void setBoard(Board board) {
 		this.board = board;
-		this.board.initialize(players);
-	}
-	
-	public void start() {
-		for (int round = 0; round < rounds; round++) {
-			performRound(round);
-		}
+		this.board.initialize(players, phaseHandler.getPhaseCount());
 	}
 
-	// LOOP ROUND/YEAR within A GAME
-	private void performRound(int round) {
-		int year = round + 1;
-		board.incrementYear();
-		printer.log("Begin Year: " + year
-				+ " ******************************************************"
-				+ " ******************************************************");
-		int numberOfPhases = phaseHandler.getPhaseCount();
-		for (int phase = 0; phase < numberOfPhases; phase++) {
-			performPhase(round, phase);
+	@Deprecated
+	public void start() {
+		while(board.getCurrentYear() < rounds) {
+			int round = board.getCurrentYear();
+			int phase = board.getCurrentPhase();
+			Stage stage = Stage.values()[board.getCurrentStage()];
+			performStage(round, phase, stage);
 		}
-		printer.log("Year " + year + " over." + "\n\n");
 	}
 
 	// LOOP PHASES/SEASONS within A ROUND/YEAR
-	private void performPhase(int round, int phase) {
+	// ADDED STAGE: the fragment of a PHASE that runs from User-Input to User-Input
+	public void performStage(int round, int phase, Stage stage) {
 		// TODO fracture performPhase method into stop & go state-saving methods
 		int truePhase = phase + 1;
 		Phase xPhase = phaseHandler.getPhase(truePhase);
-		board.incrementPhase();
-		printer.log("\n" + "Phase " + truePhase + " (" +
-				xPhase.getName() + ")" +
-				" start. **************************");
-		
-		// aid from the king
-		if (isGainsAid(phase)) {
-			determineAid();
-		}
-		
-		// the king's reward
-		if (isReward(phase)) {
-			determineReward();
-		}
+		switch (stage) {
+			case START_PHASE:
+				printer.log("\n" + "Phase " + truePhase + " (" +
+						xPhase.getName() + ")" +
+						" start. **************************");
 
-		// distribute king's envoy
-		if (isEnvoy(phase)) {
-			recallEnvoy();
-			determineEnvoy();
-		}
-		
-		// productive season
-		if (isProductiveSeason(phase)) {
-			for (PlayerStuff stuff : playersStuff) {
-				int player = stuff.getPlayerId();
-				if (stuff.hasMerchantsGuild()) {
-					stuff.gainGold(1);
-					printer.log(player, "gains 1 gold from Merchants' Guild.");
+				// aid from the king
+				if (isGainsAid(phase)) {
+					determineAid();
 				}
-			}
-			
-			// roll dice and adjust turn order
-			// NOTE: POSSIBLE PLAYER INTERACTION BREAK (CONCURRENT)
-			rollForTurnOrder(round, phase);
-//			_displayRolls();
 
-			while (playersHaveUnusedDice()) {
-				for (int turn = 0; turn < players; turn++) {
-					int playerAtTurnOrder = getPlayerAtTurnOrder(turn);
-					// influence the King's Advisors
-					// NOTE: PLAYER INTERACTION BREAK (SEQUENTIAL)
-					determineKingsAdvisorsPerPlayerAndHandleRewards(round, phase, turn, playerAtTurnOrder);
+				// the king's reward
+				if (isReward(phase)) {
+					determineReward();
 				}
-			}
 
-			/*
-			 *  POSSIBLE PLAYER INTERACTION BREAK
-			 *  CONCURRENT
-			 */
-			chooseGoods(round, phase);
-			/*
-			 *  PLAYER INTERACTION BREAK
-			 *  CONCURRENT
-			 */
-			offerConstructBuildings(round, phase);
-			
-			if (phaseHandler.isSummer(xPhase)) {
-				for (PlayerStuff stuff : playersStuff) {
-					int player = stuff.getPlayerId();
-					if (stuff.hasInn()) {
-						stuff.gainPlus2(1);
-						printer.log(player, "uses the Inn to gain a +2 token.");
+				// distribute king's envoy
+				if (isEnvoy(phase)) {
+					recallEnvoy();
+					determineEnvoy();
+				}
+
+				board.incrementStage();
+				break;
+
+			case ROLL_AND_REROLL:
+				// productive season
+				if (isProductiveSeason(phase)) {
+					for (PlayerStuff stuff : playersStuff) {
+						int player = stuff.getPlayerId();
+						if (stuff.hasMerchantsGuild()) {
+							stuff.gainGold(1);
+							printer.log(player, "gains 1 gold from Merchants' Guild.");
+						}
 					}
+
+					// roll dice and adjust turn order
+					// NOTE: POSSIBLE PLAYER INTERACTION BREAK (CONCURRENT)
+					rollForTurnOrder(round, phase);
 				}
-			}
-						
-			for (PlayerStuff stuff : playersStuff) {
-				int player = stuff.getPlayerId();
-				if (stuff.hasTownHall()) {
+
+				board.incrementStage();
+				break;
+
+			case CHOOSE_ADVISORS:
+				if (isProductiveSeason(phase)) {
+					if (!playersHaveUnusedDice()) {
+						board.incrementStage();
+						return;
+					}
+					int turn = board.getCurrentTurn();
+					int playerAtTurnOrder = getPlayerAtTurnOrder(turn);
+
+					// influence the King's Advisors
+					/*
+					 *  PLAYER INTERACTION BREAK
+					 *  SEQUENTIAL
+					 */
+					determineKingsAdvisorsPerPlayerAndHandleRewards(round, phase, turn, playerAtTurnOrder);
+					board.incrementTurn();
+				} else {
+					board.incrementStage();
+				}
+				break;
+
+			case SELECT_RESOURCES_AND_BUILD:
+				if (isProductiveSeason(phase)) {
 					/*
 					 *  POSSIBLE PLAYER INTERACTION BREAK
 					 *  CONCURRENT
 					 */
-					rememberRoundPhasePlayer(round, phase, player);
-					offerUseTownHall(stuff, player);
+					chooseGoods(round, phase);
+					offerConstructBuildings(round, phase);
 				}
-			}
-			
-			for (PlayerStuff stuff : playersStuff) {
-				int player = stuff.getPlayerId();
-				if (stuff.hasEmbassy()) {
-					stuff.gainPoints(1);
-					printer.log(player, "uses Embassy to gain +1 victory point!");
+				board.incrementStage();
+				break;
+
+			case TOWNHALL_OPTION_AND_RECRUIT_SOLDIERS:
+				if (isProductiveSeason(phase)) {
+					if (phaseHandler.isSummer(xPhase)) {
+						for (PlayerStuff stuff : playersStuff) {
+							int player = stuff.getPlayerId();
+							if (stuff.hasInn()) {
+								stuff.gainPlus2(1);
+								printer.log(player, "uses the Inn to gain a +2 token.");
+							}
+						}
+					}
+
+					for (PlayerStuff stuff : playersStuff) {
+						int player = stuff.getPlayerId();
+						if (stuff.hasEmbassy()) {
+							stuff.gainPoints(1);
+							printer.log(player, "uses Embassy to gain +1 victory point!");
+						}
+					}
+
+					for (PlayerStuff stuff : playersStuff) {
+						int player = stuff.getPlayerId();
+						if (stuff.hasTownHall()) {
+							/*
+							 *  POSSIBLE PLAYER INTERACTION BREAK
+							 *  CONCURRENT
+							 */
+							offerUseTownHall(stuff, player);
+						}
+					}
 				}
-			}
-		}
 
-		/*
-		 *  PLAYER INTERACTION BREAK
-		 *  CONCURRENT
-		 */
-		// recruit soldiers stage
-		if (isRecruit(phase)) {
-			offerRecruit(round, phase);
-		}
+				// recruit soldiers stage
+				if (isRecruit(phase)) {
+					/*
+					 *  PLAYER INTERACTION BREAK
+					 *  CONCURRENT
+					 */
+					offerRecruit(round, phase);
+				}
+				board.incrementStage();
+				break;
 
-		// battle stage
-		if (isBattle(phase)) {
-			rollKingsReinforcements();
-			performBattle(round);
-			chooseLosses(round, phase);
-			resetSoldiers();
-		}
+			case CHOOSE_DEFEAT_LOSSES:
+				// battle stage
+				if (isBattle(phase)) {
+					rollKingsReinforcements();
+					performBattle(round);
+			/*
+			 *  PLAYER INTERACTION BREAK
+			 *  CONCURRENT
+			 */
+					chooseLosses(round, phase);
+					resetSoldiers();
+				}
+				board.incrementStage();
+				break;
 
-		// return the king's aid
-		if (isLosesAid(phase)) {
-			recallAid();
-		}
+			case END_PHASE:
+				// return the king's aid
+				if (isLosesAid(phase)) {
+					recallAid();
+				}
 
-		// at the end of a phase, restore all advisors to an unreserved state
-		board.resetAdvisors();
-		
-		printer.log("\n" + "Phase " + truePhase + " over." + "\n");
+				// at the end of a phase, restore all advisors to an unreserved state
+				board.resetAdvisors();
+
+				printer.log("\n" + "Phase " + truePhase + " over." + "\n");
+				board.incrementPhase();
+				break;
+		}
 	}
 
 	public void complete() {
@@ -476,20 +497,19 @@ public class Game implements PlayerProxyListener {
 		 *  PLAYER INTERACTION BREAK
 		 *  SEQUENTIAL
 		 */
-		rememberRoundPhasePlayer(round, phase, player);
 		chooseAdvisor(player, myRoll);
 	}
 
-	private void rememberRoundPhase(int round, int phase) {
-		this.savedRound = round;
-		this.savedPhase = phase;
-	}
-
-	private void rememberRoundPhasePlayer(int round, int phase, int player) {
-		this.savedRound = round;
-		this.savedPhase = phase;
-		this.savedPlayer = player;
-	}
+//	private void rememberRoundPhase(int round, int phase) {
+////		this.savedRound = round;
+////		this.savedPhase = phase;
+//	}
+//
+//	private void rememberRoundPhasePlayer(int round, int phase, int player) {
+////		this.savedRound = round;
+////		this.savedPhase = phase;
+////		this.savedPlayer = player;
+//	}
 
 	// USES IDENTICAL LOGIC TO determineEnvoy FOR MOST
 	private void determineAid() {
@@ -545,7 +565,6 @@ public class Game implements PlayerProxyListener {
 				for (Long playerId : playersWithLeastBuildingsAndLeastResources) {
 					int player = playerId.intValue();
 					printer.log(player, "received the King's aid of 1 resource.");
-					rememberRoundPhasePlayer(savedRound, savedPhase, player);
 					getPlayerStuff(player).gainUnchosenResources(1);
 					complete = true;
 				}
@@ -696,11 +715,10 @@ public class Game implements PlayerProxyListener {
 			 *  POSSIBLE PLAYER INTERACTION BREAK
 			 *  CONCURRENT
 			 */
-			rememberRoundPhase(round, phase);
 			pauseToOfferStatueOrChapel();
-
-			updateTurnOrder(rolls);
 		}
+
+		updateTurnOrder(rolls);
 	}
 
 	private boolean isAnyStatuesOrChapelsEligable() {
@@ -717,64 +735,28 @@ public class Game implements PlayerProxyListener {
 		return false;
 	}
 
-	Thread[] threads;
-	CountDownLatch latch;
 	private void pauseToOfferStatueOrChapel() {
-		// TODO remove threads... only demonstrating race handling
-		threads = new Thread[rolls.length];
-		latch = new CountDownLatch(rolls.length);
 		for (int i = 0, rollsLength = rolls.length; i < rollsLength; i++) {
 			final Roll roll = rolls[i];
-			threads[i] = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					int player = roll.getPlayer();
-					try {
-						Thread.sleep((new Random().nextInt(5)+1) * 100 + 1000);
-
-						PlayerStuff stuff = playersStuff[player];
-						if (stuff.hasStatue() && roll.isStatueEligable()) {
-							rememberRoundPhasePlayer(Game.this.savedRound, Game.this.savedPhase, player);
-							offerUseStatue(roll, player);
-						}
-						if (stuff.hasChapel() && roll.isChapelEligable()) {
-							rememberRoundPhasePlayer(Game.this.savedRound, Game.this.savedPhase, player);
-							offerUseChapel(roll, player);
-						}
-						if (stuff.hasStatue() && roll.isStatueEligable()) {
-							rememberRoundPhasePlayer(Game.this.savedRound, Game.this.savedPhase, player);
-							offerUseStatue(roll, player);
-						}
-
-						latch.countDown();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} finally {}
-				}
-			});
-			threads[i].start();
+			int player = roll.getPlayer();
+			handleReroll(roll, player);
 		}
-		try {
-			latch.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+	}
+
+	private void handleReroll(Roll roll, int player) {
+		PlayerStuff stuff = playersStuff[player];
+		if (stuff.hasStatue() && roll.isStatueEligable()) {
+			offerUseStatue(roll, player);
+		}
+		if (stuff.hasChapel() && roll.isChapelEligable()) {
+			offerUseChapel(roll, player);
+		}
+		if (stuff.hasStatue() && roll.isStatueEligable()) {
+			offerUseStatue(roll, player);
 		}
 	}
 
 
-
-	private void _displayRolls() {
-		// TODO add the "reserve advisors / 2-player only" rule
-		for (int turn = 0; turn < players; turn++) {
-			if (rolls != null) {
-				Roll roll = rolls[turn];
-				final int player = roll.getPlayer();
-				printer.log(player, "\n          roll || " + rolls[turn].toString());
-			} else {
-				printer.log("\n          roll missing for turn " + turn);
-			}
-		}
-	}
 
 	private void rollKingsReinforcements() {
 		int reinforcements = Roll.rollTheDice(0, 1, 6).getUnusedTotal();
@@ -1000,12 +982,11 @@ public class Game implements PlayerProxyListener {
 
 	//<editor-fold desc="PrepareToPromptUserOrBot">
 	private void chooseAdvisor(int player, Roll myRoll) {
-		getProxy(player).onAdvisorChoice(myRoll, board, playersStuff[player]);
+		getProxy(player).onAdvisorChoice(myRoll, board, getPlayerStuff(player));
 	}
 
 	private void chooseGoods(int round, int phase) {
 		for (int player = 0; player < players; player++) {
-			rememberRoundPhasePlayer(round, phase, player);
 			getProxy(player).onGoodsChoice(getPlayerStuff(player).countUnchosenResources());
 		}
 	}
@@ -1017,7 +998,6 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void chooseLosses(int round, int phase, int player) {
-		rememberRoundPhasePlayer(round, phase, player);
 		getProxy(player).onChooseSpentResources(getPlayerStuff(player).countUnpaidDebts(), playersStuff[player]);
 	}
 
@@ -1036,7 +1016,6 @@ public class Game implements PlayerProxyListener {
 	private void offerConstructBuildings(int round, int phase) {
 		printer.log("");
 		for (int player = 0; player < players; player++) {
-			rememberRoundPhasePlayer(player, player, player);
 			getProxy(player).onBuildOption(playersStuff[player]);
 		}
 	}
@@ -1044,7 +1023,6 @@ public class Game implements PlayerProxyListener {
 	private void offerRecruit(int round, int phase) {
 		for (PlayerStuff p : playersStuff) {
 			int player = p.getPlayerId();
-			rememberRoundPhasePlayer(round, phase, player);
 			getProxy(player).onRecruitOption(p);
 		}
 	}
@@ -1058,10 +1036,9 @@ public class Game implements PlayerProxyListener {
 
 	//<editor-fold desc="ListenerCallbacks">
 	@Override
-	public void onAdvisorGiftSelection(Advisor advisor, RewardChoice rewardChoice) {
-		final int round = this.savedRound;
-		final int phase = this.savedPhase;
-		final int player = this.savedPlayer;
+	public void onAdvisorGiftSelection(int player, Advisor advisor, RewardChoice rewardChoice) {
+		final int round = board.getCurrentYear();
+		final int phase = board.getCurrentPhase();
 
 		if (advisor != null) {
 			board.reserveAdvisor(advisor.getOrdinal());
@@ -1112,10 +1089,10 @@ public class Game implements PlayerProxyListener {
 	}
 
 	@Override
-	public void onUseStatueResponse(boolean useStatue, Roll roll, int diePosition) {
-		final int round = this.savedRound;
-		final int phase = this.savedPhase;
-		final int player = this.savedPlayer;
+	public void onUseStatueResponse(int player, boolean useStatue, Roll roll, int diePosition) {
+		final int round = board.getCurrentYear();
+		final int phase = board.getCurrentPhase();
+
 		printer.log(player, ((useStatue) ? "did" : "did not") + " use the Statue.");
 		if (useStatue) {
 			printer.log(player, "roll was " + roll.toString());
@@ -1126,10 +1103,10 @@ public class Game implements PlayerProxyListener {
 	}
 
 	@Override
-	public void onUseChapelResponse(boolean useChapel, Roll roll) {
-		final int round = this.savedRound;
-		final int phase = this.savedPhase;
-		final int player = this.savedPlayer;
+	public void onUseChapelResponse(int player, boolean useChapel, Roll roll) {
+		final int round = board.getCurrentYear();
+		final int phase = board.getCurrentPhase();
+
 		printer.log(player, ((useChapel) ? "did" : "did not") + " use the Chapel.");
 		if (useChapel) {
 			printer.log(player, "roll was " + roll.toString());
@@ -1140,10 +1117,10 @@ public class Game implements PlayerProxyListener {
 	}
 
 	@Override
-	public void onUseTownHallResponse(boolean useTownHall) {
-		final int round = this.savedRound;
-		final int phase = this.savedPhase;
-		final int player = this.savedPlayer;
+	public void onUseTownHallResponse(int player, boolean useTownHall) {
+		final int round = board.getCurrentYear();
+		final int phase = board.getCurrentPhase();
+
 		if (useTownHall) {
 			PlayerStuff stuff = playersStuff[player];
 			stuff.gainPoints(1);
@@ -1155,10 +1132,10 @@ public class Game implements PlayerProxyListener {
 	}
 
 	@Override
-	public void onGoodsSelection(Reward total) {
-		final int round = this.savedRound;
-		final int phase = this.savedPhase;
-		final int player = this.savedPlayer;
+	public void onGoodsSelection(int player, Reward total) {
+		final int round = board.getCurrentYear();
+		final int phase = board.getCurrentPhase();
+
 		if (!total.isEmpty()) {
 			printer.log(player, "converted unchosen resources into goods.");
 		}
@@ -1168,10 +1145,10 @@ public class Game implements PlayerProxyListener {
 	}
 
 	@Override
-	public void onLossesSelection(Cost total) {
-		final int round = this.savedRound;
-		final int phase = this.savedPhase;
-		final int player = this.savedPlayer;
+	public void onLossesSelection(int player, Cost total) {
+		final int round = board.getCurrentYear();
+		final int phase = board.getCurrentPhase();
+
 		if (!total.isEmpty()) {
 			printer.log(player, "paid unchosen losses from goods.");
 		}
@@ -1181,10 +1158,10 @@ public class Game implements PlayerProxyListener {
 	}
 
 	@Override
-	public void onBuild(List<ProvinceBuilding> buildings) {
-		final int round = this.savedRound;
-		final int phase = this.savedPhase;
-		final int player = this.savedPlayer;
+	public void onBuild(int player, List<ProvinceBuilding> buildings) {
+		final int round = board.getCurrentYear();
+		final int phase = board.getCurrentPhase();
+
 		if (buildings == null || buildings.isEmpty()) {
 			printer.log(player, "did not build a building.");
 			return;
@@ -1206,10 +1183,10 @@ public class Game implements PlayerProxyListener {
 	}
 
 	@Override
-	public void onChooseRecruitQuantity(int count) {
-		final int round = this.savedRound;
-		final int phase = this.savedPhase;
-		final int player = this.savedPlayer;
+	public void onChooseRecruitQuantity(int player, int count) {
+		final int round = board.getCurrentYear();
+		final int phase = board.getCurrentPhase();
+
 		PlayerStuff stuff = playersStuff[player];
 		int recruitQty = count / 2;
 		if (stuff.hasBarracks()) {
