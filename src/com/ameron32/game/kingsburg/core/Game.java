@@ -67,7 +67,6 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private List<PlayerStuff> getAllPlayersStuff() {
-
 		return Arrays.asList(playersStuff);
 	}
 	//</editor-fold>
