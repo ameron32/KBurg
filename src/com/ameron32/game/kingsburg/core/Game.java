@@ -23,51 +23,86 @@ public class Game implements PlayerProxyListener {
 
 	private Logger printer = Printer.get(); // TODO remove printer
 
-	// player numbers are locked in place. turn order is variable.
-
-	// number of players & their stuff
-	private int players;
-	private PlayerStuff[] playersStuff;
-	
-	// proxy interfaces to resolve user/player choices
-	private PlayerProxy[] proxies;
-	
-	// phases
-	private PhaseHandler phaseHandler;
-	
-	// number of rounds
-	private int rounds;
-
-	// current turn order of player
-	private int[] turnOrder;
-
-	// most recent player rolls in order of player number
-	private Roll[] rolls;
-	
-	// storage of board-based information
-	private Board board;
-	
-	// simple enemyDeck
-	private EnemyDeck enemyDeck;
-
-
 	//
 	//
 	// **************************************************
 	// GETTERS AND SETTERS
 	//<editor-fold desc="GettersAndSetters">
+	// proxy interfaces to resolve user/player choices
+	private PlayerProxy[] proxies;
 	private PlayerProxy getProxy(int player) {
 		getPlayerStuff(player).pullSynchronize();
 		return proxies[player];
 	}
+	public void setPlayerProxy(int player, PlayerProxy proxy) {
+		proxies[player] = proxy;
+	}
 
+	// player numbers are locked in place. turn order is variable.
+	// number of players & their stuff
+	private int players;
+	private PlayerStuff[] playersStuff;
 	private PlayerStuff getPlayerStuff(int player) {
 		playersStuff[player].pullSynchronize();
 		return playersStuff[player];
 	}
+	public void setPlayerStuff(int player, PlayerStuff stuff) {
+		playersStuff[player] = stuff;
+	}
 
 	private List<PlayerStuff> getAllPlayersStuff() {
 		return Arrays.asList(playersStuff);
+	}
+
+	// simple enemyDeck
+	private EnemyDeck enemyDeck;
+	private EnemyDeck getEnemyDeck() {
+		return enemyDeck;
+	}
+
+	// phases
+	private PhaseHandler phaseHandler;
+	private PhaseHandler getPhaseHandler() {
+		return phaseHandler;
+	}
+
+	// storage of board-based information
+	private Board board;
+	private Board getBoard() {
+		return board;
+	}
+	private void setBoard(Board board) {
+		this.board = board;
+	}
+
+	// most recent player rolls in order of player number
+	private Roll[] rolls;
+	private Roll[] getRolls() {
+		return rolls;
+	}
+	private void setRolls(Roll[] rolls) {
+		this.rolls = rolls;
+	}
+
+	// current turn order of player
+	private int[] turnOrder;
+	private int[] getTurnOrder() {
+		return turnOrder;
+	}
+	private void setTurnOrder(int[] turnOrder) {
+		this.turnOrder = turnOrder;
+	}
+	private void setTurnOrder(int player, int position) {
+		this.turnOrder[player] = position;
+	}
+
+	// number of rounds
+	private int rounds;
+	private int getRounds() {
+		return rounds;
+	}
+	private void setRounds(int rounds) {
+		this.rounds = rounds;
 	}
 	//</editor-fold>
 
@@ -78,41 +113,30 @@ public class Game implements PlayerProxyListener {
 	// **************************************************
 	// GAME LOOP / LIFECYCLE
 	//<editor-fold desc="Lifecycle">
-	public void setup(int players, int phases, int rounds) {
-		this.enemyDeck = new EnemyDeck(rounds);
+	public void setup(int players, int phases, int rounds, Board board) {
 		this.players = players;
 		this.playersStuff = new PlayerStuff[players];
 		this.proxies = new PlayerProxy[players];
 		this.phaseHandler = new PhaseHandler();
-		this.rounds = rounds;
-		turnOrder = new int[players];
+		setRounds(rounds);
+		setTurnOrder(new int[players]);
+		setBoard(board);
+
+		getBoard().initialize(players, getPhaseHandler().getPhaseCount());
+		this.enemyDeck = new EnemyDeck(getRounds());
 		for (int i = 0; i < players; i++) {
-			// set basic turn order by player # in case of tie on first
-			// season
-			turnOrder[i] = i;
+			// set basic turn order by player # in case of tie on first season
+			setTurnOrder(i, i);
 		}
 		printer.log("New Game: " + players + " players");
 	}
 	
-	public void setPlayerProxy(int player, PlayerProxy proxy) {
-		proxies[player] = proxy;
-	}
-	
-	public void setPlayerStuff(int player, PlayerStuff stuff) {
-		playersStuff[player] = stuff;
-	}
-	
-	public void setBoard(Board board) {
-		this.board = board;
-		this.board.initialize(players, phaseHandler.getPhaseCount());
-	}
-
 	@Deprecated
 	public void start() {
-		while(board.getCurrentYear() < rounds) {
-			int round = board.getCurrentYear();
-			int phase = board.getCurrentPhase();
-			Stage stage = Stage.values()[board.getCurrentStage()];
+		while(getBoard().getCurrentYear() < getRounds()) {
+			int round = getBoard().getCurrentYear();
+			int phase = getBoard().getCurrentPhase();
+			Stage stage = Stage.values()[getBoard().getCurrentStage()];
 			performStage(round, phase, stage);
 		}
 	}
@@ -120,9 +144,8 @@ public class Game implements PlayerProxyListener {
 	// LOOP PHASES/SEASONS within A ROUND/YEAR
 	// ADDED STAGE: the fragment of a PHASE that runs from User-Input to User-Input
 	public void performStage(int round, int phase, Stage stage) {
-		// TODO fracture performPhase method into stop & go state-saving methods
 		int truePhase = phase + 1;
-		Phase xPhase = phaseHandler.getPhase(truePhase);
+		Phase xPhase = getPhaseHandler().getPhase(truePhase);
 		switch (stage) {
 			case START_PHASE:
 				printer.log("\n" + "Phase " + truePhase + " (" +
@@ -145,7 +168,7 @@ public class Game implements PlayerProxyListener {
 					determineEnvoy();
 				}
 
-				board.incrementStage();
+				getBoard().incrementStage();
 				break;
 
 			case ROLL_AND_REROLL:
@@ -164,45 +187,41 @@ public class Game implements PlayerProxyListener {
 					rollForTurnOrder(round, phase);
 				}
 
-				board.incrementStage();
+				getBoard().incrementStage();
 				break;
 
 			case CHOOSE_ADVISORS:
 				if (isProductiveSeason(phase)) {
 					if (!playersHaveUnusedDice()) {
-						board.incrementStage();
+						getBoard().incrementStage();
 						return;
 					}
-					int turn = board.getCurrentTurn();
+					int turn = getBoard().getCurrentTurn();
 					int playerAtTurnOrder = getPlayerAtTurnOrder(turn);
 
 					// influence the King's Advisors
-					/*
-					 *  PLAYER INTERACTION BREAK
-					 *  SEQUENTIAL
-					 */
-					determineKingsAdvisorsPerPlayerAndHandleRewards(round, phase, turn, playerAtTurnOrder);
-					board.incrementTurn();
+					// PLAYER INTERACTION BREAK
+					// SEQUENTIAL
+					influenceOneAdvisor(round, phase, turn, playerAtTurnOrder);
+					getBoard().incrementTurn();
 				} else {
-					board.incrementStage();
+					getBoard().incrementStage();
 				}
 				break;
 
 			case SELECT_RESOURCES_AND_BUILD:
 				if (isProductiveSeason(phase)) {
-					/*
-					 *  POSSIBLE PLAYER INTERACTION BREAK
-					 *  CONCURRENT
-					 */
+					// POSSIBLE PLAYER INTERACTION BREAK
+					// CONCURRENT
 					chooseGoods(round, phase);
 					offerConstructBuildings(round, phase);
 				}
-				board.incrementStage();
+				getBoard().incrementStage();
 				break;
 
 			case TOWNHALL_OPTION_AND_RECRUIT_SOLDIERS:
 				if (isProductiveSeason(phase)) {
-					if (phaseHandler.isSummer(xPhase)) {
+					if (getPhaseHandler().isSummer(xPhase)) {
 						for (PlayerStuff stuff : getAllPlayersStuff()) {
 							int player = stuff.getPlayerId();
 							if (stuff.hasInn()) {
@@ -223,10 +242,8 @@ public class Game implements PlayerProxyListener {
 					for (PlayerStuff stuff : getAllPlayersStuff()) {
 						int player = stuff.getPlayerId();
 						if (stuff.hasTownHall()) {
-							/*
-							 *  POSSIBLE PLAYER INTERACTION BREAK
-							 *  CONCURRENT
-							 */
+							// POSSIBLE PLAYER INTERACTION BREAK
+							// CONCURRENT
 							offerUseTownHall(stuff, player);
 						}
 					}
@@ -234,13 +251,11 @@ public class Game implements PlayerProxyListener {
 
 				// recruit soldiers stage
 				if (isRecruit(phase)) {
-					/*
-					 *  PLAYER INTERACTION BREAK
-					 *  CONCURRENT
-					 */
+					// POSSIBLE PLAYER INTERACTION BREAK
+					// CONCURRENT
 					offerRecruit(round, phase);
 				}
-				board.incrementStage();
+				getBoard().incrementStage();
 				break;
 
 			case CHOOSE_DEFEAT_LOSSES:
@@ -248,14 +263,13 @@ public class Game implements PlayerProxyListener {
 				if (isBattle(phase)) {
 					rollKingsReinforcements();
 					performBattle(round);
-			/*
-			 *  PLAYER INTERACTION BREAK
-			 *  CONCURRENT
-			 */
-					chooseLosses(round, phase);
 					resetSoldiers();
+
+					// POSSIBLE PLAYER INTERACTION BREAK
+					// CONCURRENT
+					chooseLosses(round, phase);
 				}
-				board.incrementStage();
+				getBoard().incrementStage();
 				break;
 
 			case END_PHASE:
@@ -265,10 +279,10 @@ public class Game implements PlayerProxyListener {
 				}
 
 				// at the end of a phase, restore all advisors to an unreserved state
-				board.resetAdvisors();
+				getBoard().resetAdvisors();
 
 				printer.log("\n" + "Phase " + truePhase + " over." + "\n");
-				board.incrementPhase();
+				getBoard().incrementPhase();
 				break;
 		}
 	}
@@ -404,41 +418,43 @@ public class Game implements PlayerProxyListener {
 	//
 	// **************************************************
 	// HUMAN UNDERSTANDABLE LOGIC METHODS
-
+//<editor-fold desc="PhaseHandler Tests">
 	private boolean isProductiveSeason(int phase) {
 		phase++; // real phase count
-		return phaseHandler.getPhase(phase).isProductive();
+		return getPhaseHandler().getPhase(phase).isProductive();
 	}
 	
 	private boolean isGainsAid(int phase) {
 		phase++; // real phase count
-		return phaseHandler.getPhase(phase).isGainsAid();
+		return getPhaseHandler().getPhase(phase).isGainsAid();
 	}
 	
 	private boolean isLosesAid(int phase) {
 		phase++; // real phase count
-		return phaseHandler.getPhase(phase).isLosesAid();
+		return getPhaseHandler().getPhase(phase).isLosesAid();
 	}
 
 	private boolean isReward(int phase) {
 		phase++; // real phase count
-		return phaseHandler.getPhase(phase).isReward();
+		return getPhaseHandler().getPhase(phase).isReward();
 	}
 	
 	private boolean isRecruit(int phase) {
 		phase++; // real phase count
-		return phaseHandler.getPhase(phase).isRecruit();
+		return getPhaseHandler().getPhase(phase).isRecruit();
 	}
 	
 	private boolean isEnvoy(int phase) {
 		phase++; // real phase count
-		return phaseHandler.getPhase(phase).isEnvoy();
+		return getPhaseHandler().getPhase(phase).isEnvoy();
 	}
 	
 	private boolean isBattle(int phase) {
 		phase++; // real phase count
-		return phaseHandler.getPhase(phase).isBattle();
+		return getPhaseHandler().getPhase(phase).isBattle();
 	}
+	//</editor-fold>
+
 
 	private Roll[] rollDiceForAllPlayers() {
 		Roll[] roll = new Roll[players]; // each players roll
@@ -452,26 +468,24 @@ public class Game implements PlayerProxyListener {
 	private void updateTurnOrder(Roll[] rolls) {
 		// determine new rankings
 		List<Roll> rollList = Arrays.asList(rolls);
-		Collections.sort(rollList, new RollComparator(turnOrder));
+		Collections.sort(rollList, new RollComparator(getTurnOrder()));
 
 		// apply new turn order to master turn order
 		for (int position = 0; position < players; position++) {
 			Roll r = rollList.get(position);
-			turnOrder[r.getPlayer()] = position;
+			setTurnOrder(r.getPlayer(), position);;
 		}
 	}
 
 
 	// LOOP TURNS within A PHASE/SEASON
-	private void determineKingsAdvisorsPerPlayerAndHandleRewards(int round, int phase, int turn, int player) {
-		// display the basic turn info
-//		_displayGenericTurnInformation(round, phase, player);
-		
-		if (rolls == null || !isProductiveSeason(phase)) {
+	private void influenceOneAdvisor(int round, int phase, int turn, int player) {
+
+		if (getRolls() == null || !isProductiveSeason(phase)) {
 			return;
 		}
 		
-		for (Roll roll : rolls) {
+		for (Roll roll : getRolls()) {
 			for (int i = 0; i < players; i++) {
 				if (roll.getPlayer() == player) {
 					if (!roll.hasUsableDice()) {
@@ -481,39 +495,23 @@ public class Game implements PlayerProxyListener {
 			}
 		}
 		
-		influenceOneAdvisor(round, phase, turn, player);
-	}
-	
-	private void influenceOneAdvisor(int round, int phase, int turn, int player) {
+		// influence one advisor
 		Roll myRoll = null;
-		for (int i = 0; i < rolls.length; i++) {
-			if (rolls[i].getPlayer() == player) {
-				myRoll = rolls[i];
+		for (int i = 0; i < getRolls().length; i++) {
+			if (getRolls()[i].getPlayer() == player) {
+				myRoll = getRolls()[i];
 			}
 		}
 		if (myRoll == null) {
 			return;
 		}
 		
-		printer.log(player, rolls[turn].toString());
+		printer.log(player, getRolls()[turn].toString());
 
-		/*
-		 *  PLAYER INTERACTION BREAK
-		 *  SEQUENTIAL
-		 */
+		// PLAYER INTERACTION BREAK
+		// SEQUENTIAL
 		chooseAdvisor(player, myRoll);
 	}
-
-//	private void rememberRoundPhase(int round, int phase) {
-////		this.savedRound = round;
-////		this.savedPhase = phase;
-//	}
-//
-//	private void rememberRoundPhasePlayer(int round, int phase, int player) {
-////		this.savedRound = round;
-////		this.savedPhase = phase;
-////		this.savedPlayer = player;
-//	}
 
 	// USES IDENTICAL LOGIC TO determineEnvoy FOR MOST
 	private void determineAid() {
@@ -708,25 +706,23 @@ public class Game implements PlayerProxyListener {
 	private void rollForTurnOrder(int round, int phase) {
 		// TODO add the "reserve advisors / 2-player only" rule
 
-		rolls = rollDiceForAllPlayers();
+		setRolls(rollDiceForAllPlayers());
 
 		// offer Statue and Chapel before updating turn order
 		// TODO needs concurrent Statue/Chapel offer
 		if (isAnyStatuesOrChapelsEligable()) {
 			printer.log("Looks like someone can use a Statue or Chapel. Let's see if the rolls are changing.");
 
-			/*
-			 *  POSSIBLE PLAYER INTERACTION BREAK
-			 *  CONCURRENT
-			 */
+			// POSSIBLE PLAYER INTERACTION BREAK
+			// CONCURRENT
 			pauseToOfferStatueOrChapel();
 		}
 
-		updateTurnOrder(rolls);
+		updateTurnOrder(getRolls());
 	}
 
 	private boolean isAnyStatuesOrChapelsEligable() {
-		for (Roll roll : rolls) {
+		for (Roll roll : getRolls()) {
 			int player = roll.getPlayer();
 			PlayerStuff stuff = getPlayerStuff(player);
 			if (stuff.hasStatue() && roll.isStatueEligable()) {
@@ -740,8 +736,8 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void pauseToOfferStatueOrChapel() {
-		for (int i = 0, rollsLength = rolls.length; i < rollsLength; i++) {
-			final Roll roll = rolls[i];
+		for (int i = 0, rollsLength = getRolls().length; i < rollsLength; i++) {
+			final Roll roll = getRolls()[i];
 			int player = roll.getPlayer();
 			handleReroll(roll, player);
 		}
@@ -760,18 +756,16 @@ public class Game implements PlayerProxyListener {
 		}
 	}
 
-
-
 	private void rollKingsReinforcements() {
 		int reinforcements = Roll.rollTheDice(0, 1, 6).getUnusedTotal();
 		printer.log("The King sends (" + reinforcements + ") reinforcements to fight alongside your soldiers.");
-		board.addKingsReinforcements(reinforcements);
+		getBoard().addKingsReinforcements(reinforcements);
 	}
 
 	private void performBattle(int round) {
 		// TODO consider removing building bonuses and recalculating, to be safe
 		int year = round + 1;
-		EnemyCard enemy = enemyDeck.getCard(year);
+		EnemyCard enemy = getEnemyDeck().getCard(year);
 		printer.log("\nEnemy Card revealed: " + enemy.toString());
 		int strengthToBeat = enemy.getStrength();
 		int winners = 0;
@@ -779,7 +773,7 @@ public class Game implements PlayerProxyListener {
 		for (int player = 0; player < players; player++) {
 			printer.log("");
 			grantBuildingSoldierBoost(player);
-			int soldiers = board.getSoldiersFor(player);
+			int soldiers = getBoard().getSoldiersFor(player);
 			if (enemy.isGoblin() &&	getPlayerStuff(player).hasBarricade()) {
 				printer.log(player, "has a Barricade against Goblins. +1");
 				soldiers++;
@@ -834,7 +828,7 @@ public class Game implements PlayerProxyListener {
 
 	private int getPlayerAtTurnOrder(int turn) {
 		for (int i = 0; i < players; i++) {
-			if (turnOrder[i] == turn) {
+			if (getTurnOrder()[i] == turn) {
 				return i;
 			}
 		}
@@ -861,44 +855,44 @@ public class Game implements PlayerProxyListener {
 		PlayerStuff stuff = getPlayerStuff(player);
 		if (stuff.hasGuardTower()) {
 			printer.log(player, "has a Guard Tower. +1");
-			board.increaseSoldiers(player, 1);
+			getBoard().increaseSoldiers(player, 1);
 		}
 		if (stuff.hasBlacksmith()) {
 			printer.log(player, "has a Blacksmith. +1");
-			board.increaseSoldiers(player, 1);
+			getBoard().increaseSoldiers(player, 1);
 		}
 		if (stuff.hasPalisade()) {
 			printer.log(player, "has a Palisade. +1");
-			board.increaseSoldiers(player, 1);
+			getBoard().increaseSoldiers(player, 1);
 		}
 		if (stuff.hasStoneWall()) {
 			printer.log(player, "has a Stone Wall. +1");
-			board.increaseSoldiers(player, 1);
+			getBoard().increaseSoldiers(player, 1);
 		}
 		if (stuff.hasFortress()) {
 			printer.log(player, "has a Fortress. +1");
-			board.increaseSoldiers(player, 1);
+			getBoard().increaseSoldiers(player, 1);
 		}
 		if (stuff.hasChurch()) {
 			printer.log(player, "has a Church. +0");
-			board.increaseSoldiers(player, 0);
+			getBoard().increaseSoldiers(player, 0);
 		}
 		if (stuff.hasBarricade()) {
 			printer.log(player, "has a Barricade. +0");
-			board.increaseSoldiers(player, 0);
+			getBoard().increaseSoldiers(player, 0);
 		}
 		if (stuff.hasWizardsGuild()) {
 			printer.log(player, "has a Wizards' Guild. +1");
-			board.increaseSoldiers(player, 2);
+			getBoard().increaseSoldiers(player, 2);
 		}
 		if (stuff.hasFarms()) {
 			printer.log(player, "has Farms. -1");
-			board.increaseSoldiers(player, -1);
+			getBoard().increaseSoldiers(player, -1);
 		}
 	}
 
 	private boolean playersHaveUnusedDice() {
-		for (Roll roll : rolls) {
+		for (Roll roll : getRolls()) {
 			if (roll.hasUsableDice()) {
 				return true;
 			}
@@ -907,7 +901,7 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void resetSoldiers() {
-		board.resetSoldiers();
+		getBoard().resetSoldiers();
 		// TODO add for buildings
 	}
 
@@ -986,7 +980,7 @@ public class Game implements PlayerProxyListener {
 
 	//<editor-fold desc="PrepareToPromptUserOrBot">
 	private void chooseAdvisor(int player, Roll myRoll) {
-		getProxy(player).onAdvisorChoice(myRoll, board, getPlayerStuff(player));
+		getProxy(player).onAdvisorChoice(myRoll, getBoard(), getPlayerStuff(player));
 	}
 
 	private void chooseGoods(int round, int phase) {
@@ -1002,7 +996,8 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void chooseLosses(int round, int phase, int player) {
-		getProxy(player).onChooseSpentResources(getPlayerStuff(player).countUnpaidDebts(), getPlayerStuff(player));
+		int debts = getPlayerStuff(player).countUnpaidDebts();
+		getProxy(player).onChooseSpentResources(debts, getPlayerStuff(player));
 	}
 
 	private void offerUseStatue(Roll roll, int player) {
@@ -1041,11 +1036,8 @@ public class Game implements PlayerProxyListener {
 	//<editor-fold desc="ListenerCallbacks">
 	@Override
 	public void onAdvisorGiftSelection(int player, Advisor advisor, RewardChoice rewardChoice) {
-		final int round = board.getCurrentYear();
-		final int phase = board.getCurrentPhase();
-
 		if (advisor != null) {
-			board.reserveAdvisor(advisor.getOrdinal());
+			getBoard().reserveAdvisor(advisor.getOrdinal());
 		}
 
 		if (rewardChoice == null) {
@@ -1077,7 +1069,7 @@ public class Game implements PlayerProxyListener {
 					soldiers++;
 					printer.log(player, "uses Stables to increase soldiers by 1.");
 				}
-				board.increaseSoldiers(player, soldiers);
+				getBoard().increaseSoldiers(player, soldiers);
 			}
 			if (reward.isPeek()) {
 				offerPeek(player);
@@ -1094,9 +1086,6 @@ public class Game implements PlayerProxyListener {
 
 	@Override
 	public void onUseStatueResponse(int player, boolean useStatue, Roll roll, int diePosition) {
-		final int round = board.getCurrentYear();
-		final int phase = board.getCurrentPhase();
-
 		printer.log(player, ((useStatue) ? "did" : "did not") + " use the Statue.");
 		if (useStatue) {
 			printer.log(player, "roll was " + roll.toString());
@@ -1108,9 +1097,6 @@ public class Game implements PlayerProxyListener {
 
 	@Override
 	public void onUseChapelResponse(int player, boolean useChapel, Roll roll) {
-		final int round = board.getCurrentYear();
-		final int phase = board.getCurrentPhase();
-
 		printer.log(player, ((useChapel) ? "did" : "did not") + " use the Chapel.");
 		if (useChapel) {
 			printer.log(player, "roll was " + roll.toString());
@@ -1122,9 +1108,8 @@ public class Game implements PlayerProxyListener {
 
 	@Override
 	public void onUseTownHallResponse(int player, boolean useTownHall) {
-		final int round = board.getCurrentYear();
-		final int phase = board.getCurrentPhase();
-
+		final int round = getBoard().getCurrentYear();
+		final int phase = getBoard().getCurrentPhase();
 		if (useTownHall) {
 			PlayerStuff stuff = getPlayerStuff(player);
 			stuff.gainPoints(1);
@@ -1137,9 +1122,6 @@ public class Game implements PlayerProxyListener {
 
 	@Override
 	public void onGoodsSelection(int player, Reward total) {
-		final int round = board.getCurrentYear();
-		final int phase = board.getCurrentPhase();
-
 		if (!total.isEmpty()) {
 			printer.log(player, "converted unchosen resources into goods.");
 		}
@@ -1150,9 +1132,6 @@ public class Game implements PlayerProxyListener {
 
 	@Override
 	public void onLossesSelection(int player, Cost total) {
-		final int round = board.getCurrentYear();
-		final int phase = board.getCurrentPhase();
-
 		if (!total.isEmpty()) {
 			printer.log(player, "paid unchosen losses from goods.");
 		}
@@ -1163,9 +1142,6 @@ public class Game implements PlayerProxyListener {
 
 	@Override
 	public void onBuild(int player, List<ProvinceBuilding> buildings) {
-		final int round = board.getCurrentYear();
-		final int phase = board.getCurrentPhase();
-
 		if (buildings == null || buildings.isEmpty()) {
 			printer.log(player, "did not build a building.");
 			return;
@@ -1188,8 +1164,8 @@ public class Game implements PlayerProxyListener {
 
 	@Override
 	public void onChooseRecruitQuantity(int player, int count) {
-		final int round = board.getCurrentYear();
-		final int phase = board.getCurrentPhase();
+		final int round = getBoard().getCurrentYear();
+		final int phase = getBoard().getCurrentPhase();
 
 		PlayerStuff stuff = getPlayerStuff(player);
 		int recruitQty = count / 2;
@@ -1198,7 +1174,7 @@ public class Game implements PlayerProxyListener {
 		}
 		getProxy(player).onChooseSpentResources(recruitQty, stuff);
 		printer.log(player, "recruited [" + count + "] soldier(s).");
-		board.increaseSoldiers(player, count);
+		getBoard().increaseSoldiers(player, count);
 		getPlayerStuff(player).pushUpdate();
 	}
 	//</editor-fold>
