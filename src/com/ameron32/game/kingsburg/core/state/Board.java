@@ -126,4 +126,9 @@ public abstract class Board {
 	public int getCurrentYear() {
 		return currentYear;
 	}
+
+	public String getCurrentStageAsString() {
+		return "[" + getCurrentYear() + "," + getCurrentPhase() + "," +
+				getCurrentStage() + "," + getCurrentTurn() + "]";
+	}
 }

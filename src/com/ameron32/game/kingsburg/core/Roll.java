@@ -17,10 +17,11 @@ public class Roll {
 	
 	private static final int NO_PLAYER = -1;
 		
-	public static Roll rollTheDice(int player, int numOfDice, int dieSides) {
-		return new Roll(player, numOfDice, dieSides);
+	public static Roll rollTheDice(String requestId, int player, int numOfDice, int dieSides) {
+		return new Roll(requestId, player, numOfDice, dieSides);
 	}
-	
+
+	private String requestId;
 	private int player = NO_PLAYER;
 	private int total;
 	private int[] standardDice;
@@ -35,8 +36,9 @@ public class Roll {
 	private int numOfDice;
 	private int dieSides;
 	
-	private Roll(int player, int numOfDice, int dieSides) {
+	private Roll(String requestId, int player, int numOfDice, int dieSides) {
 		super();
+		this.requestId = requestId;
 		this.player = player;
 		this.numOfDice = numOfDice;
 		this.dieSides = dieSides;
@@ -96,7 +98,7 @@ public class Roll {
 	}
 	
 	private void fillDieSlot(int slot, int dieSides) {
-		int oneRoll = _rollOneDie(dieSides);
+		int oneRoll = _rollOneDie(slot, dieSides);
 		if (slot < MAXIMUM_PLAYER_DICE) {
 			this.standardDice[slot] = oneRoll;
 		} else {
@@ -129,10 +131,10 @@ public class Roll {
 		}
 	}
 	
-	private int _rollOneDie(int dieSides) {
+	private int _rollOneDie(int slot, int dieSides) {
 		BasicRandomizer rand = BasicRandomizer.get();
 		// TODO consider checking rolls
-		return rand.nextInt(dieSides) + 1;
+		return rand.nextInt(requestId + slot, dieSides) + 1;
 	}
 	
 	

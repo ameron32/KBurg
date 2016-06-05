@@ -757,7 +757,8 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void rollKingsReinforcements() {
-		int reinforcements = Roll.rollTheDice(0, 1, 6).getUnusedTotal();
+		String randomRequestId = "rollKingsReinforcements" + getBoard().getCurrentYear();
+		int reinforcements = Roll.rollTheDice(randomRequestId, 0, 1, 6).getUnusedTotal();
 		printer.log("The King sends (" + reinforcements + ") reinforcements to fight alongside your soldiers.");
 		getBoard().addKingsReinforcements(reinforcements);
 	}
@@ -848,7 +849,8 @@ public class Game implements PlayerProxyListener {
 			bonusDieCount++;
 		}
 		// roll 'em
-		return Roll.rollTheDice(player, PlayerStuff.PLAYER_DICE_COUNT + bonusDieCount, PlayerStuff.PLAYER_DICE_SIDES);
+		String randomRequestId = "rollOnePlayer" + getBoard().getCurrentStageAsString();
+		return Roll.rollTheDice(randomRequestId, player, PlayerStuff.PLAYER_DICE_COUNT + bonusDieCount, PlayerStuff.PLAYER_DICE_SIDES);
 	}
 
 	private void grantBuildingSoldierBoost(int player) {

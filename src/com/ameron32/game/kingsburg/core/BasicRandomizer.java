@@ -1,4 +1,6 @@
 package com.ameron32.game.kingsburg.core;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -7,6 +9,8 @@ import java.util.Random;
  *
  */
 public class BasicRandomizer implements Randomizer {
+
+	static HashMap<String, Integer> cachedRandoms;
 	
 	static BasicRandomizer randomizer;
 	
@@ -19,10 +23,18 @@ public class BasicRandomizer implements Randomizer {
 	
 	Random rand = new Random();
 
-	private BasicRandomizer() { super(); }
+	private BasicRandomizer() {
+		super();
+		cachedRandoms = new HashMap<>();
+	}
 	
 	@Override
-	public int nextInt(int max) {
-		return rand.nextInt(max);
+	public int nextInt(String requestId, int max) {
+		// generate a random value incase needed
+		int random = rand.nextInt(max);
+		// pull the cached value, if it exists,
+		// otherwise, default to the new random value
+		int value = cachedRandoms.getOrDefault(requestId, random);
+		return value;
 	}
 }

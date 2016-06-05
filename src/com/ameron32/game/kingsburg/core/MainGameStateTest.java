@@ -26,9 +26,10 @@ public class MainGameStateTest {
 		for (int player = 0; player < NUMBER_OF_PLAYERS; player++) {
 			BasicBotPlayerProxy proxy = new BasicBotPlayerProxy(player);
 			proxy.setListener(game); // TODO separate listener from Game
+			bots[player] = proxy;
 		}
-		game.setup(NUMBER_OF_PLAYERS, NUMBER_OF_PHASES, NUMBER_OF_ROUNDS);
-		game.setBoard(new LocalBoard(new LocalBoard.BoardListener() {
+		game.setup(NUMBER_OF_PLAYERS, NUMBER_OF_PHASES, NUMBER_OF_ROUNDS,
+				new LocalBoard(new LocalBoard.BoardListener() {
 
 			int year, phase, stage, turn;
 			@Override
