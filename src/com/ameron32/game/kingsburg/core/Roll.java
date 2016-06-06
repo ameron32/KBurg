@@ -132,7 +132,7 @@ public class Roll {
 	}
 	
 	private int _rollOneDie(int slot, int dieSides) {
-		BasicRandomizer rand = BasicRandomizer.get();
+		Randomizer rand = Randomizer.get();
 		// TODO consider checking rolls
 		return rand.nextInt(requestId + slot, dieSides) + 1;
 	}

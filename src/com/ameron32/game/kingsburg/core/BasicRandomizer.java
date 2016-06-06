@@ -1,4 +1,6 @@
 package com.ameron32.game.kingsburg.core;
+import sun.rmi.runtime.Log;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -35,6 +37,8 @@ public class BasicRandomizer implements Randomizer {
 		// pull the cached value, if it exists,
 		// otherwise, default to the new random value
 		int value = cachedRandoms.getOrDefault(requestId, random);
+		Printer.get().log("          {"+requestId+"}    random: " + value);
+		cachedRandoms.put(requestId, value);
 		return value;
 	}
 }

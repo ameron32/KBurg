@@ -1,5 +1,6 @@
 package com.ameron32.game.kingsburg.core.state;
 import com.ameron32.game.kingsburg.core.BasicRandomizer;
+import com.ameron32.game.kingsburg.core.Randomizer;
 import com.ameron32.game.kingsburg.core.advisor.MakeReward;
 import com.ameron32.game.kingsburg.core.advisor.RewardChoice;
 
@@ -188,7 +189,7 @@ public class EnemyDeck {
 			}
 		}
 		int countOfCards = cardsInTheYear.size();
-		int seed = BasicRandomizer.get().nextInt(countOfCards);
+		int seed = Randomizer.get().nextInt("EnemyDeck(" + year + ")", countOfCards);
 		return cardsInTheYear.get(seed);
 	}
 	

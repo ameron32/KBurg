@@ -8,11 +8,11 @@ import java.util.List;
 public class MainAdvisorTests {
 
 	static WallOfAdvisors wall;
-	static BasicRandomizer rand;
+	static Randomizer rand;
 	
 	public static void main(String[] args) throws java.lang.Exception {
 		wall = WallOfAdvisors.get();
-		rand = BasicRandomizer.get();
+		rand = Randomizer.get();
 		
 		_advisorsInOrder();
 	}
@@ -32,7 +32,7 @@ public class MainAdvisorTests {
 	
 	private static void _randomAdvisors() {
 		for (int i = 0; i < 10; i++) {
-			int dice = rand.nextInt(18);
+			int dice = rand.nextInt("advisorTest", 18);
 			_displayAdvisor(dice);
 		}
 	}

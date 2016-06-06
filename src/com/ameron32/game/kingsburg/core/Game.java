@@ -418,7 +418,7 @@ public class Game implements PlayerProxyListener {
 	//
 	// **************************************************
 	// HUMAN UNDERSTANDABLE LOGIC METHODS
-//<editor-fold desc="PhaseHandler Tests">
+    //<editor-fold desc="PhaseHandler Tests">
 	private boolean isProductiveSeason(int phase) {
 		phase++; // real phase count
 		return getPhaseHandler().getPhase(phase).isProductive();
@@ -456,63 +456,7 @@ public class Game implements PlayerProxyListener {
 	//</editor-fold>
 
 
-	private Roll[] rollDiceForAllPlayers() {
-		Roll[] roll = new Roll[players]; // each players roll
-		for (int player = 0; player < players; player++) {
-			Roll r = _rollOnePlayer(player);
-			roll[player] = r;
-		}
-		return roll;
-	}
-
-	private void updateTurnOrder(Roll[] rolls) {
-		// determine new rankings
-		List<Roll> rollList = Arrays.asList(rolls);
-		Collections.sort(rollList, new RollComparator(getTurnOrder()));
-
-		// apply new turn order to master turn order
-		for (int position = 0; position < players; position++) {
-			Roll r = rollList.get(position);
-			setTurnOrder(r.getPlayer(), position);;
-		}
-	}
-
-
-	// LOOP TURNS within A PHASE/SEASON
-	private void influenceOneAdvisor(int round, int phase, int turn, int player) {
-
-		if (getRolls() == null || !isProductiveSeason(phase)) {
-			return;
-		}
-		
-		for (Roll roll : getRolls()) {
-			for (int i = 0; i < players; i++) {
-				if (roll.getPlayer() == player) {
-					if (!roll.hasUsableDice()) {
-						return;
-					}
-				}
-			}
-		}
-		
-		// influence one advisor
-		Roll myRoll = null;
-		for (int i = 0; i < getRolls().length; i++) {
-			if (getRolls()[i].getPlayer() == player) {
-				myRoll = getRolls()[i];
-			}
-		}
-		if (myRoll == null) {
-			return;
-		}
-		
-		printer.log(player, getRolls()[turn].toString());
-
-		// PLAYER INTERACTION BREAK
-		// SEQUENTIAL
-		chooseAdvisor(player, myRoll);
-	}
-
+    //<editor-fold desc="Determine and Recall">
 	// USES IDENTICAL LOGIC TO determineEnvoy FOR MOST
 	private void determineAid() {
 		boolean complete = false;
@@ -702,6 +646,84 @@ public class Game implements PlayerProxyListener {
 			complete = true;
 		}
 	}
+	//</editor-fold>
+
+
+	//<editor-fold desc="Other">
+	private Roll[] rollDiceForAllPlayers() {
+		Roll[] roll = new Roll[players]; // each players roll
+		for (int player = 0; player < players; player++) {
+			Roll r = _rollOnePlayer(player);
+			roll[player] = r;
+		}
+		return roll;
+	}
+
+	// modify to proper roll
+	private Roll _rollOnePlayer(int player) {
+		// determine number of dice
+		int bonusDieCount = PlayerStuff.PLAYER_STARTING_BONUS_DIE_COUNT;
+		if (getPlayerStuff(player).hasAid()) {
+			printer.log(player, "has the King's aid. +1 bonus die");
+			bonusDieCount++;
+		}
+		if (getPlayerStuff(player).hasFarms()) {
+			printer.log(player, "has Farms. +1 bonus die");
+			bonusDieCount++;
+		}
+		// roll 'em
+		String randomRequestId = "rollOnePlayer" + getBoard().getCurrentStageAsString() + player;
+		return Roll.rollTheDice(randomRequestId, player, PlayerStuff.PLAYER_DICE_COUNT + bonusDieCount, PlayerStuff.PLAYER_DICE_SIDES);
+	}
+
+	private void updateTurnOrder(Roll[] rolls) {
+		// determine new rankings
+		List<Roll> rollList = Arrays.asList(rolls);
+		Collections.sort(rollList, new RollComparator(getTurnOrder()));
+
+		// apply new turn order to master turn order
+		for (int position = 0; position < players; position++) {
+			Roll r = rollList.get(position);
+			setTurnOrder(r.getPlayer(), position);;
+		}
+	}
+
+
+	// LOOP TURNS within A PHASE/SEASON
+	private void influenceOneAdvisor(int round, int phase, int turn, int player) {
+
+		if (getRolls() == null || !isProductiveSeason(phase)) {
+			return;
+		}
+		
+		for (Roll roll : getRolls()) {
+			for (int i = 0; i < players; i++) {
+				if (roll.getPlayer() == player) {
+					if (!roll.hasUsableDice()) {
+						return;
+					}
+				}
+			}
+		}
+		
+		// influence one advisor
+		Roll myRoll = null;
+		for (int i = 0; i < getRolls().length; i++) {
+			if (getRolls()[i].getPlayer() == player) {
+				myRoll = getRolls()[i];
+			}
+		}
+		if (myRoll == null) {
+			return;
+		}
+		
+		printer.log(player, getRolls()[turn].toString());
+
+		// PLAYER INTERACTION BREAK
+		// SEQUENTIAL
+		chooseAdvisor(player, myRoll);
+	}
+
 
 	private void rollForTurnOrder(int round, int phase) {
 		// TODO add the "reserve advisors / 2-player only" rule
@@ -836,23 +858,6 @@ public class Game implements PlayerProxyListener {
 		throw new IllegalStateException("player not found in turn order");
 	}
 
-	// modify to proper roll
-	private Roll _rollOnePlayer(int player) {
-		// determine number of dice
-		int bonusDieCount = PlayerStuff.PLAYER_STARTING_BONUS_DIE_COUNT;
-		if (getPlayerStuff(player).hasAid()) {
-			printer.log(player, "has the King's aid. +1 bonus die");
-			bonusDieCount++;
-		}
-		if (getPlayerStuff(player).hasFarms()) {
-			printer.log(player, "has Farms. +1 bonus die");
-			bonusDieCount++;
-		}
-		// roll 'em
-		String randomRequestId = "rollOnePlayer" + getBoard().getCurrentStageAsString();
-		return Roll.rollTheDice(randomRequestId, player, PlayerStuff.PLAYER_DICE_COUNT + bonusDieCount, PlayerStuff.PLAYER_DICE_SIDES);
-	}
-
 	private void grantBuildingSoldierBoost(int player) {
 		PlayerStuff stuff = getPlayerStuff(player);
 		if (stuff.hasGuardTower()) {
@@ -906,6 +911,8 @@ public class Game implements PlayerProxyListener {
 		getBoard().resetSoldiers();
 		// TODO add for buildings
 	}
+	//</editor-fold>
+
 
 	//<editor-fold desc="WinterBattleResults">
 	private void battleVictory(int player, EnemyCard enemy) {
