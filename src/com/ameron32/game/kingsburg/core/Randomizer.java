@@ -2,8 +2,8 @@ package com.ameron32.game.kingsburg.core;
 
 public interface Randomizer {
 
-	public static Randomizer get() {
-		return BasicRandomizer.get();
+	static Randomizer get() {
+		return NonRandomProducer.get();
 	}
 
 	/**
