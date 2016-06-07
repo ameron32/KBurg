@@ -21,7 +21,7 @@ public class MainGameLoopTest {
 		BasicBotPlayerProxy[] bots = new BasicBotPlayerProxy[NUMBER_OF_PLAYERS];
 		for (int player = 0; player < NUMBER_OF_PLAYERS; player++) {
 			BasicBotPlayerProxy proxy = new BasicBotPlayerProxy(player);
-			proxy.setListener(game); // TODO separate listener from Game
+			proxy.setListener(game.getPlayerProxyListener()); // TODO separate listener from Game
 			bots[player] = proxy;
 		}
 		game.setup(NUMBER_OF_PLAYERS, NUMBER_OF_PHASES, NUMBER_OF_ROUNDS,

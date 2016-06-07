@@ -19,7 +19,7 @@ import java.util.*;
  * 		complete()
  * 
  */
-public class Game implements PlayerProxyListener {
+public class Game {
 
 	private Logger printer = Printer.get(); // TODO remove printer
 
@@ -103,6 +103,179 @@ public class Game implements PlayerProxyListener {
 	}
 	private void setRounds(int rounds) {
 		this.rounds = rounds;
+	}
+
+	public PlayerProxyListener playerProxyListener = new PlayerProxyListener() {
+		@Override
+		public void onAdvisorGiftSelection(int player, Advisor advisor, RewardChoice rewardChoice) {
+			// TODO store the decision
+
+			// perform the decision
+			if (advisor != null) {
+				getBoard().reserveAdvisor(advisor.getOrdinal());
+			}
+
+			if (rewardChoice == null) {
+				//player has skipped the turn
+				printer.log(player, "has skipped the turn.");
+				return;
+			}
+
+			PlayerStuff myStuff = getPlayerStuff(player);
+			// pay the cost for the advisor (or skip the reward)
+			boolean skip = false;
+			if (rewardChoice.hasAnyCost()) {
+				Cost cost = rewardChoice.getCost();
+				if (myStuff.canPayCost(cost)) {
+					myStuff.payCost(cost);
+				} else {
+					skip = true;
+				}
+			}
+			if (!skip) {
+				printer.log(player, "received the reward [" + rewardChoice.getHumanReadableReward() + "] from " + advisor.getName() + "(" + advisor.getOrdinal() + ").");
+				Reward reward = rewardChoice.getReward();
+				myStuff.receiveReward(reward);
+
+				// handle soldiers
+				int soldiers = reward.getSoldiers();
+				if (soldiers > 0) {
+					if (myStuff.hasStable()) {
+						soldiers++;
+						printer.log(player, "uses Stables to increase soldiers by 1.");
+					}
+					getBoard().increaseSoldiers(player, soldiers);
+				}
+				if (reward.isPeek()) {
+					offerPeek(player);
+
+				}
+			} else {
+				printer.log(player, "skipped the turn, unable to pay the gift cost.");
+			}
+
+			// display stuff
+			printer.log(player, myStuff.toHumanReadableString());
+			getPlayerStuff(player).pushUpdate();
+		}
+
+		@Override
+		public void onUseStatueResponse(int player, boolean useStatue, Roll roll, int diePosition) {
+			// TODO store the decision
+
+			// perform the decision
+			printer.log(player, ((useStatue) ? "did" : "did not") + " use the Statue.");
+			if (useStatue) {
+				printer.log(player, "roll was " + roll.toString());
+				roll.useStatue(diePosition);
+				printer.log(player, "roll is now " + roll.toString());
+			}
+			getPlayerStuff(player).pushUpdate();
+		}
+
+		@Override
+		public void onUseChapelResponse(int player, boolean useChapel, Roll roll) {
+			// TODO store the decision
+
+			// perform the decision
+			printer.log(player, ((useChapel) ? "did" : "did not") + " use the Chapel.");
+			if (useChapel) {
+				printer.log(player, "roll was " + roll.toString());
+				roll.useChapel();
+				printer.log(player, "roll is now " + roll.toString());
+			}
+			getPlayerStuff(player).pushUpdate();
+		}
+
+		@Override
+		public void onUseTownHallResponse(int player, boolean useTownHall) {
+			// TODO store the decision
+
+			// perform the decision
+			final int round = getBoard().getCurrentYear();
+			final int phase = getBoard().getCurrentPhase();
+			if (useTownHall) {
+				PlayerStuff stuff = getPlayerStuff(player);
+				stuff.gainPoints(1);
+				stuff.spendUnpaidDebt(1);
+				chooseLosses(round, phase, player);
+				printer.log(player, "uses Town Hall to gain +1 victory point in exchange for 1 resource.");
+			}
+			getPlayerStuff(player).pushUpdate();
+		}
+
+		@Override
+		public void onGoodsSelection(int player, Reward total) {
+			// TODO store the decision
+
+			// perform the decision
+			if (!total.isEmpty()) {
+				printer.log(player, "converted unchosen resources into goods.");
+			}
+			getPlayerStuff(player).clearUnchosenResources();
+			getPlayerStuff(player).receiveReward(total);
+			getPlayerStuff(player).pushUpdate();
+		}
+
+		@Override
+		public void onLossesSelection(int player, Cost total) {
+			// TODO store the decision
+
+			// perform the decision
+			if (!total.isEmpty()) {
+				printer.log(player, "paid unchosen losses from goods.");
+			}
+			getPlayerStuff(player).clearUnpaidDebts();
+			getPlayerStuff(player).payCost(total);
+			getPlayerStuff(player).pushUpdate();
+		}
+
+		@Override
+		public void onBuild(int player, List<ProvinceBuilding> buildings) {
+			// TODO store the decision
+
+			// perform the decision
+			if (buildings == null || buildings.isEmpty()) {
+				printer.log(player, "did not build a building.");
+				return;
+			}
+			if (buildings.size() == 1) {
+				ProvinceBuilding building = buildings.get(0);
+				printer.log(player, "built a " + building.getName() + "!");
+				getPlayerStuff(player).gainPoints(building.getPoints());
+				return;
+			}
+			if (buildings.size() > 1) {
+				printer.log(player, "built:\n");
+				for (ProvinceBuilding building : buildings) {
+					printer.log(player, "a " + building.getName() + "\n");
+					getPlayerStuff(player).gainPoints(building.getPoints());
+				}
+			}
+			getPlayerStuff(player).pushUpdate();
+		}
+
+		@Override
+		public void onChooseRecruitQuantity(int player, int count) {
+			// TODO store the decision
+
+			// perform the decision
+			final int round = getBoard().getCurrentYear();
+			final int phase = getBoard().getCurrentPhase();
+
+			PlayerStuff stuff = getPlayerStuff(player);
+			int recruitQty = count / 2;
+			if (stuff.hasBarracks()) {
+				recruitQty = count;
+			}
+			getProxy(player).onChooseSpentResources(recruitQty, stuff);
+			printer.log(player, "recruited [" + count + "] soldier(s).");
+			getBoard().increaseSoldiers(player, count);
+			getPlayerStuff(player).pushUpdate();
+		}
+	};
+	public PlayerProxyListener getPlayerProxyListener() {
+		return playerProxyListener;
 	}
 	//</editor-fold>
 
@@ -989,39 +1162,69 @@ public class Game implements PlayerProxyListener {
 
 	//<editor-fold desc="PrepareToPromptUserOrBot">
 	private void chooseAdvisor(int player, Roll myRoll) {
-		getProxy(player).onAdvisorChoice(myRoll, getBoard(), getPlayerStuff(player));
+		// FIXME look for existing Decision.
+		String decisionId = "chooseAdvisor(" + player + ")withRoll(" + myRoll.toString() + ")on(" + getBoard().getCurrentStageAsString() + ")";
+		Decision decision = DecisionHandler.get().getDecisionAt(decisionId);
+		if (decision == null) {
+			// if no decision exists, prompt BOT or USER to make decision
+			getProxy(player).onAdvisorChoice(myRoll, getBoard(), getPlayerStuff(player));
+		}
+
+		// now we have a decision
+
 	}
 
 	private void chooseGoods(int round, int phase) {
+		// TODO look for existing Decision.
+
+		// if no decision exists, prompt BOT or USER to make decision
 		for (int player = 0; player < players; player++) {
 			getProxy(player).onGoodsChoice(getPlayerStuff(player).countUnchosenResources());
 		}
 	}
 
 	private void chooseLosses(int round, int phase) {
+		// TODO look for existing Decision.
+
+		// if no decision exists, prompt BOT or USER to make decision
 		for (int player = 0; player < players; player++) {
 			chooseLosses(round, phase, player);
 		}
 	}
 
 	private void chooseLosses(int round, int phase, int player) {
+		// TODO look for existing Decision.
+
+		// if no decision exists, prompt BOT or USER to make decision
 		int debts = getPlayerStuff(player).countUnpaidDebts();
 		getProxy(player).onChooseSpentResources(debts, getPlayerStuff(player));
 	}
 
 	private void offerUseStatue(Roll roll, int player) {
+		// TODO look for existing Decision.
+
+		// if no decision exists, prompt BOT or USER to make decision
 		getProxy(player).onOfferUseStatue(roll);
 	}
 
 	private void offerUseChapel(Roll roll, int player) {
+		// TODO look for existing Decision.
+
+		// if no decision exists, prompt BOT or USER to make decision
 		getProxy(player).onOfferUseChapel(roll);
 	}
 
 	private void offerUseTownHall(PlayerStuff stuff, int player) {
+		// TODO look for existing Decision.
+
+		// if no decision exists, prompt BOT or USER to make decision
 		getProxy(player).onOfferUseTownHall(stuff);
 	}
 
 	private void offerConstructBuildings(int round, int phase) {
+		// TODO look for existing Decision.
+
+		// if no decision exists, prompt BOT or USER to make decision
 		printer.log("");
 		for (int player = 0; player < players; player++) {
 			getProxy(player).onBuildOption(getPlayerStuff(player));
@@ -1029,6 +1232,9 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void offerRecruit(int round, int phase) {
+		// TODO look for existing Decision.
+
+		// if no decision exists, prompt BOT or USER to make decision
 		for (PlayerStuff p : getAllPlayersStuff()) {
 			int player = p.getPlayerId();
 			getProxy(player).onRecruitOption(p);
@@ -1036,6 +1242,9 @@ public class Game implements PlayerProxyListener {
 	}
 
 	private void offerPeek(int player) {
+		// TODO look for existing Decision.
+
+		// if no decision exists, prompt BOT or USER to make decision
 		// peek at soldiers
 		getProxy(player).onPeek();
 	}
@@ -1043,149 +1252,7 @@ public class Game implements PlayerProxyListener {
 
 
 	//<editor-fold desc="ListenerCallbacks">
-	@Override
-	public void onAdvisorGiftSelection(int player, Advisor advisor, RewardChoice rewardChoice) {
-		if (advisor != null) {
-			getBoard().reserveAdvisor(advisor.getOrdinal());
-		}
 
-		if (rewardChoice == null) {
-			//player has skipped the turn
-			printer.log(player, "has skipped the turn.");
-			return;
-		}
-
-		PlayerStuff myStuff = getPlayerStuff(player);
-		// pay the cost for the advisor (or skip the reward)
-		boolean skip = false;
-		if (rewardChoice.hasAnyCost()) {
-			Cost cost = rewardChoice.getCost();
-			if (myStuff.canPayCost(cost)) {
-				myStuff.payCost(cost);
-			} else {
-				skip = true;
-			}
-		}
-		if (!skip) {
-			printer.log(player, "received the reward [" + rewardChoice.getHumanReadableReward() + "] from " + advisor.getName() + "(" + advisor.getOrdinal() + ").");
-			Reward reward = rewardChoice.getReward();
-			myStuff.receiveReward(reward);
-
-			// handle soldiers
-			int soldiers = reward.getSoldiers();
-			if (soldiers > 0) {
-				if (myStuff.hasStable()) {
-					soldiers++;
-					printer.log(player, "uses Stables to increase soldiers by 1.");
-				}
-				getBoard().increaseSoldiers(player, soldiers);
-			}
-			if (reward.isPeek()) {
-				offerPeek(player);
-
-			}
-		} else {
-			printer.log(player, "skipped the turn, unable to pay the gift cost.");
-		}
-
-		// display stuff
-		printer.log(player, myStuff.toHumanReadableString());
-		getPlayerStuff(player).pushUpdate();
-	}
-
-	@Override
-	public void onUseStatueResponse(int player, boolean useStatue, Roll roll, int diePosition) {
-		printer.log(player, ((useStatue) ? "did" : "did not") + " use the Statue.");
-		if (useStatue) {
-			printer.log(player, "roll was " + roll.toString());
-			roll.useStatue(diePosition);
-			printer.log(player, "roll is now " + roll.toString());
-		}
-		getPlayerStuff(player).pushUpdate();
-	}
-
-	@Override
-	public void onUseChapelResponse(int player, boolean useChapel, Roll roll) {
-		printer.log(player, ((useChapel) ? "did" : "did not") + " use the Chapel.");
-		if (useChapel) {
-			printer.log(player, "roll was " + roll.toString());
-			roll.useChapel();
-			printer.log(player, "roll is now " + roll.toString());
-		}
-		getPlayerStuff(player).pushUpdate();
-	}
-
-	@Override
-	public void onUseTownHallResponse(int player, boolean useTownHall) {
-		final int round = getBoard().getCurrentYear();
-		final int phase = getBoard().getCurrentPhase();
-		if (useTownHall) {
-			PlayerStuff stuff = getPlayerStuff(player);
-			stuff.gainPoints(1);
-			stuff.spendUnpaidDebt(1);
-			chooseLosses(round, phase, player);
-			printer.log(player, "uses Town Hall to gain +1 victory point in exchange for 1 resource.");
-		}
-		getPlayerStuff(player).pushUpdate();
-	}
-
-	@Override
-	public void onGoodsSelection(int player, Reward total) {
-		if (!total.isEmpty()) {
-			printer.log(player, "converted unchosen resources into goods.");
-		}
-		getPlayerStuff(player).clearUnchosenResources();
-		getPlayerStuff(player).receiveReward(total);
-		getPlayerStuff(player).pushUpdate();
-	}
-
-	@Override
-	public void onLossesSelection(int player, Cost total) {
-		if (!total.isEmpty()) {
-			printer.log(player, "paid unchosen losses from goods.");
-		}
-		getPlayerStuff(player).clearUnpaidDebts();
-		getPlayerStuff(player).payCost(total);
-		getPlayerStuff(player).pushUpdate();
-	}
-
-	@Override
-	public void onBuild(int player, List<ProvinceBuilding> buildings) {
-		if (buildings == null || buildings.isEmpty()) {
-			printer.log(player, "did not build a building.");
-			return;
-		}
-		if (buildings.size() == 1) {
-			ProvinceBuilding building = buildings.get(0);
-			printer.log(player, "built a " + building.getName() + "!");
-			getPlayerStuff(player).gainPoints(building.getPoints());
-			return;
-		}
-		if (buildings.size() > 1) {
-			printer.log(player, "built:\n");
-			for (ProvinceBuilding building : buildings) {
-				printer.log(player, "a " + building.getName() + "\n");
-				getPlayerStuff(player).gainPoints(building.getPoints());
-			}
-		}
-		getPlayerStuff(player).pushUpdate();
-	}
-
-	@Override
-	public void onChooseRecruitQuantity(int player, int count) {
-		final int round = getBoard().getCurrentYear();
-		final int phase = getBoard().getCurrentPhase();
-
-		PlayerStuff stuff = getPlayerStuff(player);
-		int recruitQty = count / 2;
-		if (stuff.hasBarracks()) {
-			recruitQty = count;
-		}
-		getProxy(player).onChooseSpentResources(recruitQty, stuff);
-		printer.log(player, "recruited [" + count + "] soldier(s).");
-		getBoard().increaseSoldiers(player, count);
-		getPlayerStuff(player).pushUpdate();
-	}
 	//</editor-fold>
 
 
