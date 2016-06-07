@@ -1,5 +1,6 @@
 package com.ameron32.game.kingsburg.core;
 import com.ameron32.game.kingsburg.core.bot.PlayerProxyListener;
+import com.ameron32.game.kingsburg.core.next.GameLoop;
 import com.ameron32.game.kingsburg.core.state.Stage;
 import com.ameron32.game.kingsburg.core.advisor.Advisor;
 import com.ameron32.game.kingsburg.core.advisor.Cost;
@@ -19,7 +20,7 @@ import java.util.*;
  * 		complete()
  * 
  */
-public class Game {
+public class Game implements GameLoop {
 
 	private Logger printer = Printer.get(); // TODO remove printer
 
@@ -29,6 +30,14 @@ public class Game {
 	// GETTERS AND SETTERS
 	//<editor-fold desc="GettersAndSetters">
 	// proxy interfaces to resolve user/player choices
+	public PlayerStuff getPlayerStuff(int player) {
+		return stateManager.getPlayerStuff(player);
+	}
+
+	public Board getBoard() {
+		return stateManager.getBoard();
+	}
+
 	private PlayerProxy[] proxies;
 	private PlayerProxy getProxy(int player) {
 		getPlayerStuff(player).pullSynchronize();
@@ -38,20 +47,9 @@ public class Game {
 		proxies[player] = proxy;
 	}
 
-	// player numbers are locked in place. turn order is variable.
-	// number of players & their stuff
-	private int players;
-	private PlayerStuff[] playersStuff;
-	private PlayerStuff getPlayerStuff(int player) {
-		playersStuff[player].pullSynchronize();
-		return playersStuff[player];
-	}
-	public void setPlayerStuff(int player, PlayerStuff stuff) {
-		playersStuff[player] = stuff;
-	}
-
-	private List<PlayerStuff> getAllPlayersStuff() {
-		return Arrays.asList(playersStuff);
+	private StateManager stateManager;
+	private StateManager getStateManager() {
+		return stateManager;
 	}
 
 	// simple enemyDeck
@@ -60,40 +58,28 @@ public class Game {
 		return enemyDeck;
 	}
 
+	// battle resolver
+	private BattleResolver battleResolver;
+	private BattleResolver getBattleResolver() {
+		return battleResolver;
+	}
+
+	// game resolver
+	private GameFinisher gameFinisher;
+	private GameFinisher getGameFinisher() {
+		return gameFinisher;
+	}
+
+	// stage resolver
+	private StageResolver stageResolver;
+	private StageResolver getStageResolver() {
+		return stageResolver;
+	}
+
 	// phases
 	private PhaseHandler phaseHandler;
 	private PhaseHandler getPhaseHandler() {
 		return phaseHandler;
-	}
-
-	// storage of board-based information
-	private Board board;
-	private Board getBoard() {
-		return board;
-	}
-	private void setBoard(Board board) {
-		this.board = board;
-	}
-
-	// most recent player rolls in order of player number
-	private Roll[] rolls;
-	private Roll[] getRolls() {
-		return rolls;
-	}
-	private void setRolls(Roll[] rolls) {
-		this.rolls = rolls;
-	}
-
-	// current turn order of player
-	private int[] turnOrder;
-	private int[] getTurnOrder() {
-		return turnOrder;
-	}
-	private void setTurnOrder(int[] turnOrder) {
-		this.turnOrder = turnOrder;
-	}
-	private void setTurnOrder(int player, int position) {
-		this.turnOrder[player] = position;
 	}
 
 	// number of rounds
@@ -287,13 +273,15 @@ public class Game {
 	// GAME LOOP / LIFECYCLE
 	//<editor-fold desc="Lifecycle">
 	public void setup(int players, int phases, int rounds, Board board) {
-		this.players = players;
-		this.playersStuff = new PlayerStuff[players];
+		this.stateManager = new StateManager();
+		stateManager.setPlayers(players);
 		this.proxies = new PlayerProxy[players];
 		this.phaseHandler = new PhaseHandler();
+		this.battleResolver = new BattleResolver(printer, stateManager);
+		this.gameFinisher = new GameFinisher(printer, stateManager);
 		setRounds(rounds);
 		setTurnOrder(new int[players]);
-		setBoard(board);
+		stateManager.setBoard(board);
 
 		getBoard().initialize(players, getPhaseHandler().getPhaseCount());
 		this.enemyDeck = new EnemyDeck(getRounds());
@@ -317,151 +305,40 @@ public class Game {
 	// LOOP PHASES/SEASONS within A ROUND/YEAR
 	// ADDED STAGE: the fragment of a PHASE that runs from User-Input to User-Input
 	public void performStage(int round, int phase, Stage stage) {
-		int truePhase = phase + 1;
-		Phase xPhase = getPhaseHandler().getPhase(truePhase);
+		getStageResolver().setAccess(round, phase, stage);
 		switch (stage) {
 			case START_PHASE:
-				printer.log("\n" + "Phase " + truePhase + " (" +
-						xPhase.getName() + ")" +
-						" start. **************************");
-
-				// aid from the king
-				if (isGainsAid(phase)) {
-					determineAid();
-				}
-
-				// the king's reward
-				if (isReward(phase)) {
-					determineReward();
-				}
-
-				// distribute king's envoy
-				if (isEnvoy(phase)) {
-					recallEnvoy();
-					determineEnvoy();
-				}
-
-				getBoard().incrementStage();
+				getStageResolver().performStartPhase();
 				break;
 
 			case ROLL_AND_REROLL:
-				// productive season
-				if (isProductiveSeason(phase)) {
-					for (PlayerStuff stuff : getAllPlayersStuff()) {
-						int player = stuff.getPlayerId();
-						if (stuff.hasMerchantsGuild()) {
-							stuff.gainGold(1);
-							printer.log(player, "gains 1 gold from Merchants' Guild.");
-						}
-					}
-
-					// roll dice and adjust turn order
-					// NOTE: POSSIBLE PLAYER INTERACTION BREAK (CONCURRENT)
-					rollForTurnOrder(round, phase);
-				}
-
-				getBoard().incrementStage();
+				getStageResolver().performRollAndReRoll();
 				break;
 
 			case CHOOSE_ADVISORS:
-				if (isProductiveSeason(phase)) {
-					if (!playersHaveUnusedDice()) {
-						getBoard().incrementStage();
-						return;
-					}
-					int turn = getBoard().getCurrentTurn();
-					int playerAtTurnOrder = getPlayerAtTurnOrder(turn);
-
-					// influence the King's Advisors
-					// PLAYER INTERACTION BREAK
-					// SEQUENTIAL
-					influenceOneAdvisor(round, phase, turn, playerAtTurnOrder);
-					getBoard().incrementTurn();
-				} else {
-					getBoard().incrementStage();
-				}
+				getStageResolver().performChooseAdvisors();
 				break;
 
 			case SELECT_RESOURCES_AND_BUILD:
-				if (isProductiveSeason(phase)) {
-					// POSSIBLE PLAYER INTERACTION BREAK
-					// CONCURRENT
-					chooseGoods(round, phase);
-					offerConstructBuildings(round, phase);
-				}
-				getBoard().incrementStage();
+				getStageResolver().performSelectResourcesAndBuild();
 				break;
 
 			case TOWNHALL_OPTION_AND_RECRUIT_SOLDIERS:
-				if (isProductiveSeason(phase)) {
-					if (getPhaseHandler().isSummer(xPhase)) {
-						for (PlayerStuff stuff : getAllPlayersStuff()) {
-							int player = stuff.getPlayerId();
-							if (stuff.hasInn()) {
-								stuff.gainPlus2(1);
-								printer.log(player, "uses the Inn to gain a +2 token.");
-							}
-						}
-					}
-
-					for (PlayerStuff stuff : getAllPlayersStuff()) {
-						int player = stuff.getPlayerId();
-						if (stuff.hasEmbassy()) {
-							stuff.gainPoints(1);
-							printer.log(player, "uses Embassy to gain +1 victory point!");
-						}
-					}
-
-					for (PlayerStuff stuff : getAllPlayersStuff()) {
-						int player = stuff.getPlayerId();
-						if (stuff.hasTownHall()) {
-							// POSSIBLE PLAYER INTERACTION BREAK
-							// CONCURRENT
-							offerUseTownHall(stuff, player);
-						}
-					}
-				}
-
-				// recruit soldiers stage
-				if (isRecruit(phase)) {
-					// POSSIBLE PLAYER INTERACTION BREAK
-					// CONCURRENT
-					offerRecruit(round, phase);
-				}
-				getBoard().incrementStage();
+				getStageResolver().performTownhallOptionAndRecruitSoldiers();
 				break;
 
 			case CHOOSE_DEFEAT_LOSSES:
-				// battle stage
-				if (isBattle(phase)) {
-					rollKingsReinforcements();
-					performBattle(round);
-					resetSoldiers();
-
-					// POSSIBLE PLAYER INTERACTION BREAK
-					// CONCURRENT
-					chooseLosses(round, phase);
-				}
-				getBoard().incrementStage();
+				getStageResolver().performChooseDefeatLosses();
 				break;
 
 			case END_PHASE:
-				// return the king's aid
-				if (isLosesAid(phase)) {
-					recallAid();
-				}
-
-				// at the end of a phase, restore all advisors to an unreserved state
-				getBoard().resetAdvisors();
-
-				printer.log("\n" + "Phase " + truePhase + " over." + "\n");
-				getBoard().incrementPhase();
+				getStageResolver().performEndPhase();
 				break;
 		}
 	}
 
 	public void complete() {
-		for (PlayerStuff stuff : getAllPlayersStuff()) {
+		for (PlayerStuff stuff : getStateManager().getAllPlayersStuff()) {
 			int player = stuff.getPlayerId();
 			if (stuff.hasCathedral()) {
 				int resources = stuff.countResources();
@@ -474,7 +351,7 @@ public class Game {
 		printer.log("Game Over");
 		printer.log("Calculate Scores");
 
-		for (int player = 0; player < players; player++) {
+		for (int player = 0; player < getStateManager().getPlayers(); player++) {
 			PlayerStuff stuff = getPlayerStuff(player);
 			int score = stuff.countPoints();
 			printer.log("Player " + (player+1) + " scored " + score + " points.");
@@ -483,14 +360,14 @@ public class Game {
 		boolean complete = false;
 		int mostPointsCount = 0;
 		List<Long> playersWithMostPoints = new ArrayList<>(5);
-		for (PlayerStuff p : getAllPlayersStuff()) {
+		for (PlayerStuff p : getStateManager().getAllPlayersStuff()) {
 			int count = p.countPoints();
 			int playerId = p.getPlayerId();
 			if (count > mostPointsCount) {
 				mostPointsCount = count;
 			}
 		}
-		for (PlayerStuff p : getAllPlayersStuff()) {
+		for (PlayerStuff p : getStateManager().getAllPlayersStuff()) {
 			if (p.countPoints() == mostPointsCount) {
 				int playerId = p.getPlayerId();
 				playersWithMostPoints.add(new Long(playerId));
@@ -504,7 +381,7 @@ public class Game {
 		}
 		if (playerCountMostPoints == 1 && !complete) {
 			int playerId = playersWithMostPoints.get(0).intValue();
-			playerWins(playerId, mostPointsCount);
+			getGameFinisher().playerWins(playerId, mostPointsCount);
 			complete = true;
 		}
 
@@ -537,7 +414,7 @@ public class Game {
 
 			if (playerCountMostPointsAndMostResources == 1) {
 				int playerId = playersWithMostPointsAndMostResources.get(0).intValue();
-				playerWins(playerId, mostPointsCount, mostResourcesCount);
+				getGameFinisher().playerWins(playerId, mostPointsCount, mostResourcesCount);
 				complete = true;
 			}
 
@@ -566,7 +443,7 @@ public class Game {
 
 				if (playerCountMostPointsAndMostResourcesAndMostBuildings == 1) {
 					int playerId = playersWithMostPointsAndMostResourcesAndMostBuildings.get(0).intValue();
-					playerWins(playerId, mostPointsCount, mostResourcesCount, mostBuildingsCount);
+					getGameFinisher().playerWins(playerId, mostPointsCount, mostResourcesCount, mostBuildingsCount);
 					complete = true;
 				}
 
@@ -576,7 +453,7 @@ public class Game {
 					// everyone wins
 					for (Long playerId : playersWithMostPointsAndMostResourcesAndMostBuildings) {
 						int player = playerId.intValue();
-						playersWin(player, mostPointsCount, mostResourcesCount, mostBuildingsCount);
+						getGameFinisher().playersWin(player, mostPointsCount, mostResourcesCount, mostBuildingsCount);
 						complete = true;
 					}
 				}
@@ -584,676 +461,5 @@ public class Game {
 		}
 	}
 	//</editor-fold>
-
-
-
-	//
-	//
-	// **************************************************
-	// HUMAN UNDERSTANDABLE LOGIC METHODS
-    //<editor-fold desc="PhaseHandler Tests">
-	private boolean isProductiveSeason(int phase) {
-		phase++; // real phase count
-		return getPhaseHandler().getPhase(phase).isProductive();
-	}
-	
-	private boolean isGainsAid(int phase) {
-		phase++; // real phase count
-		return getPhaseHandler().getPhase(phase).isGainsAid();
-	}
-	
-	private boolean isLosesAid(int phase) {
-		phase++; // real phase count
-		return getPhaseHandler().getPhase(phase).isLosesAid();
-	}
-
-	private boolean isReward(int phase) {
-		phase++; // real phase count
-		return getPhaseHandler().getPhase(phase).isReward();
-	}
-	
-	private boolean isRecruit(int phase) {
-		phase++; // real phase count
-		return getPhaseHandler().getPhase(phase).isRecruit();
-	}
-	
-	private boolean isEnvoy(int phase) {
-		phase++; // real phase count
-		return getPhaseHandler().getPhase(phase).isEnvoy();
-	}
-	
-	private boolean isBattle(int phase) {
-		phase++; // real phase count
-		return getPhaseHandler().getPhase(phase).isBattle();
-	}
-	//</editor-fold>
-
-
-    //<editor-fold desc="Determine and Recall">
-	// USES IDENTICAL LOGIC TO determineEnvoy FOR MOST
-	private void determineAid() {
-		boolean complete = false;
-		int leastBuildingsCount = 31000;
-		List<Long> playersWithLeastBuildings = new ArrayList<>(5);
-		for (PlayerStuff p : getAllPlayersStuff()) {
-			int count = p.countBuildings();
-			if (count < leastBuildingsCount) {
-				leastBuildingsCount = count;
-			}
-		}
-
-		for (PlayerStuff p : getAllPlayersStuff()) {
-			if (p.countBuildings() == leastBuildingsCount) {
-				playersWithLeastBuildings.add(new Long(p.getPlayerId()));
-			}
-		}
-
-		if (playersWithLeastBuildings.size() > 1) {
-			int leastBuildingsSize = playersWithLeastBuildings.size();
-			int leastResourcesCount = 31000;
-			List<Long> playersWithLeastResources = new ArrayList<>(leastBuildingsSize);
-			for (int i = 0; i < leastBuildingsSize; i++) {
-				PlayerStuff p = getPlayerStuff(playersWithLeastBuildings.get(i).intValue());
-				int count = p.countResources();
-				if (count < leastResourcesCount) {
-					leastResourcesCount = count;
-				}
-			}
-
-			for (int i = 0; i < leastBuildingsSize; i++) {
-				PlayerStuff p = getPlayerStuff(playersWithLeastBuildings.get(i).intValue());
-				if (p.countResources() == leastResourcesCount) {
-					playersWithLeastResources.add(new Long(p.getPlayerId()));
-				}
-			}
-
-			int playerCountLeastBuildings = playersWithLeastBuildings.size();
-			int playerCountLeastResources = playersWithLeastResources.size();
-			List<Long> playersWithLeastBuildingsAndLeastResources = new ArrayList<>(5);
-			for (int i = 0; i < playerCountLeastBuildings; i++) {
-				for (int j = 0; j < playerCountLeastResources; j++) {
-					int playerId = playersWithLeastBuildings.get(i).intValue();
-					if (playersWithLeastBuildings.get(i).intValue() == playersWithLeastResources.get(j).intValue()) {
-						playersWithLeastBuildingsAndLeastResources.add(new Long(playerId));
-					}
-				}
-			}
-
-			if (playersWithLeastBuildingsAndLeastResources.size() > 1) {
-				// multiple players get minimal help
-				for (Long playerId : playersWithLeastBuildingsAndLeastResources) {
-					int player = playerId.intValue();
-					printer.log(player, "received the King's aid of 1 resource.");
-					getPlayerStuff(player).gainUnchosenResources(1);
-					complete = true;
-				}
-			}
-
-			if (!complete) {
-				// award to fewest resources
-				int player = playersWithLeastBuildingsAndLeastResources.get(0).intValue();
-				printer.log(player, "received the King's aid of 1 bonus die in Spring.");
-				getPlayerStuff(player).gainAid();
-				complete = true;
-			}
-		}
-
-		if (!complete) {
-			// award to fewest buildings
-			int player = playersWithLeastBuildings.get(0).intValue();
-			printer.log(player, "received the King's aid of 1 bonus die in Spring.");
-			getPlayerStuff(player).gainAid();
-			complete = true;
-		}
-	}
-
-	private void recallAid() {
-		for (PlayerStuff p : getAllPlayersStuff()) {
-			if (p.hasAid()) {
-				p.useAid();
-				int player = p.getPlayerId();
-				printer.log(player, "returns the King's aid die.");
-			}
-		}
-	}
-
-	private void determineReward() {
-		int mostBuildingsCount = 0;
-		List<Long> playersWithMostBuildings = new ArrayList<>(5);
-		for (PlayerStuff p : getAllPlayersStuff()) {
-			int count = p.countBuildings();
-			if (count > mostBuildingsCount) {
-				mostBuildingsCount = count;
-			}
-		}
-
-		for (PlayerStuff p : getAllPlayersStuff()) {
-			if (p.countBuildings() == mostBuildingsCount) {
-				playersWithMostBuildings.add(new Long(p.getPlayerId()));
-				int player = p.getPlayerId();
-				printer.log(player, "receives the King's Reward of 1 victory point.");
-				p.gainPoints(1);
-			}
-		}
-	}
-
-	private void recallEnvoy() {
-		for (PlayerStuff p : getAllPlayersStuff()) {
-			if (p.hasEnvoy()) {
-				p.useEnvoy();
-				int player = p.getPlayerId();
-				printer.log(player, "has not used the King's envoy. The envoy is returned to the board.");
-			}
-		}
-	}
-
-	// USES IDENTICAL LOGIC TO determineAid FOR MOST
-	private void determineEnvoy() {
-		boolean complete = false;
-		int leastBuildingsCount = 31000;
-		List<Long> playersWithLeastBuildings = new ArrayList<>(5);
-		for (PlayerStuff p : getAllPlayersStuff()) {
-			int count = p.countBuildings();
-			if (count < leastBuildingsCount) {
-				leastBuildingsCount = count;
-			}
-		}
-
-		for (PlayerStuff p : getAllPlayersStuff()) {
-			if (p.countBuildings() == leastBuildingsCount) {
-				playersWithLeastBuildings.add(new Long(p.getPlayerId()));
-			}
-		}
-
-		if (playersWithLeastBuildings.size() > 1) {
-			int leastBuildingsSize = playersWithLeastBuildings.size();
-			int leastResourcesCount = 31000;
-			List<Long> playersWithLeastResources = new ArrayList<>(leastBuildingsSize);
-			for (int i = 0; i < leastBuildingsSize; i++) {
-				PlayerStuff p = getPlayerStuff(playersWithLeastBuildings.get(i).intValue());
-				int count = p.countResources();
-				if (count < leastResourcesCount) {
-					leastResourcesCount = count;
-				}
-			}
-
-			for (int i = 0; i < leastBuildingsSize; i++) {
-				PlayerStuff p = getPlayerStuff(playersWithLeastBuildings.get(i).intValue());
-				if (p.countResources() == leastResourcesCount) {
-					playersWithLeastResources.add(new Long(p.getPlayerId()));
-				}
-			}
-
-			int playerCountLeastBuildings = playersWithLeastBuildings.size();
-			int playerCountLeastResources = playersWithLeastResources.size();
-			List<Long> playersWithLeastBuildingsAndLeastResources = new ArrayList<>(5);
-			for (int i = 0; i < playerCountLeastBuildings; i++) {
-				for (int j = 0; j < playerCountLeastResources; j++) {
-					int playerId = playersWithLeastBuildings.get(i).intValue();
-					if (playersWithLeastBuildings.get(i).intValue() == playersWithLeastResources.get(j).intValue()) {
-						playersWithLeastBuildingsAndLeastResources.add(new Long(playerId));
-					}
-				}
-			}
-
-			if (playersWithLeastBuildingsAndLeastResources.size() > 1) {
-				// no players get help
-				complete = true;
-				printer.log("Several players were tied for weakest governor. No one receives the King's envoy.");
-			}
-
-			if (!complete) {
-				// award to fewest resources
-				int player = playersWithLeastBuildingsAndLeastResources.get(0).intValue();
-				printer.log(player, "has received the King's envoy, with least resources.");
-				getPlayerStuff(player).gainEnvoy();
-				complete = true;
-			}
-		}
-
-		if (!complete) {
-			// award to fewest buildings
-			int player = playersWithLeastBuildings.get(0).intValue();
-			printer.log(player, "has received the King's envoy.");
-			getPlayerStuff(player).gainEnvoy();
-			complete = true;
-		}
-	}
-	//</editor-fold>
-
-
-	//<editor-fold desc="Other">
-	private Roll[] rollDiceForAllPlayers() {
-		Roll[] roll = new Roll[players]; // each players roll
-		for (int player = 0; player < players; player++) {
-			Roll r = _rollOnePlayer(player);
-			roll[player] = r;
-		}
-		return roll;
-	}
-
-	// modify to proper roll
-	private Roll _rollOnePlayer(int player) {
-		// determine number of dice
-		int bonusDieCount = PlayerStuff.PLAYER_STARTING_BONUS_DIE_COUNT;
-		if (getPlayerStuff(player).hasAid()) {
-			printer.log(player, "has the King's aid. +1 bonus die");
-			bonusDieCount++;
-		}
-		if (getPlayerStuff(player).hasFarms()) {
-			printer.log(player, "has Farms. +1 bonus die");
-			bonusDieCount++;
-		}
-		// roll 'em
-		String randomRequestId = "rollOnePlayer" + getBoard().getCurrentStageAsString() + player;
-		return Roll.rollTheDice(randomRequestId, player, PlayerStuff.PLAYER_DICE_COUNT + bonusDieCount, PlayerStuff.PLAYER_DICE_SIDES);
-	}
-
-	private void updateTurnOrder(Roll[] rolls) {
-		// determine new rankings
-		List<Roll> rollList = Arrays.asList(rolls);
-		Collections.sort(rollList, new RollComparator(getTurnOrder()));
-
-		// apply new turn order to master turn order
-		for (int position = 0; position < players; position++) {
-			Roll r = rollList.get(position);
-			setTurnOrder(r.getPlayer(), position);;
-		}
-	}
-
-
-	// LOOP TURNS within A PHASE/SEASON
-	private void influenceOneAdvisor(int round, int phase, int turn, int player) {
-
-		if (getRolls() == null || !isProductiveSeason(phase)) {
-			return;
-		}
-		
-		for (Roll roll : getRolls()) {
-			for (int i = 0; i < players; i++) {
-				if (roll.getPlayer() == player) {
-					if (!roll.hasUsableDice()) {
-						return;
-					}
-				}
-			}
-		}
-		
-		// influence one advisor
-		Roll myRoll = null;
-		for (int i = 0; i < getRolls().length; i++) {
-			if (getRolls()[i].getPlayer() == player) {
-				myRoll = getRolls()[i];
-			}
-		}
-		if (myRoll == null) {
-			return;
-		}
-		
-		printer.log(player, getRolls()[turn].toString());
-
-		// PLAYER INTERACTION BREAK
-		// SEQUENTIAL
-		chooseAdvisor(player, myRoll);
-	}
-
-
-	private void rollForTurnOrder(int round, int phase) {
-		// TODO add the "reserve advisors / 2-player only" rule
-
-		setRolls(rollDiceForAllPlayers());
-
-		// offer Statue and Chapel before updating turn order
-		// TODO needs concurrent Statue/Chapel offer
-		if (isAnyStatuesOrChapelsEligable()) {
-			printer.log("Looks like someone can use a Statue or Chapel. Let's see if the rolls are changing.");
-
-			// POSSIBLE PLAYER INTERACTION BREAK
-			// CONCURRENT
-			pauseToOfferStatueOrChapel();
-		}
-
-		updateTurnOrder(getRolls());
-	}
-
-	private boolean isAnyStatuesOrChapelsEligable() {
-		for (Roll roll : getRolls()) {
-			int player = roll.getPlayer();
-			PlayerStuff stuff = getPlayerStuff(player);
-			if (stuff.hasStatue() && roll.isStatueEligable()) {
-				return true;
-			}
-			if (stuff.hasChapel() && roll.isChapelEligable()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private void pauseToOfferStatueOrChapel() {
-		for (int i = 0, rollsLength = getRolls().length; i < rollsLength; i++) {
-			final Roll roll = getRolls()[i];
-			int player = roll.getPlayer();
-			handleReroll(roll, player);
-		}
-	}
-
-	private void handleReroll(Roll roll, int player) {
-		PlayerStuff stuff = getPlayerStuff(player);
-		if (stuff.hasStatue() && roll.isStatueEligable()) {
-			offerUseStatue(roll, player);
-		}
-		if (stuff.hasChapel() && roll.isChapelEligable()) {
-			offerUseChapel(roll, player);
-		}
-		if (stuff.hasStatue() && roll.isStatueEligable()) {
-			offerUseStatue(roll, player);
-		}
-	}
-
-	private void rollKingsReinforcements() {
-		String randomRequestId = "rollKingsReinforcements" + getBoard().getCurrentYear();
-		int reinforcements = Roll.rollTheDice(randomRequestId, 0, 1, 6).getUnusedTotal();
-		printer.log("The King sends (" + reinforcements + ") reinforcements to fight alongside your soldiers.");
-		getBoard().addKingsReinforcements(reinforcements);
-	}
-
-	private void performBattle(int round) {
-		// TODO consider removing building bonuses and recalculating, to be safe
-		int year = round + 1;
-		EnemyCard enemy = getEnemyDeck().getCard(year);
-		printer.log("\nEnemy Card revealed: " + enemy.toString());
-		int strengthToBeat = enemy.getStrength();
-		int winners = 0;
-		int[] cityForces = new int[5];
-		for (int player = 0; player < players; player++) {
-			printer.log("");
-			grantBuildingSoldierBoost(player);
-			int soldiers = getBoard().getSoldiersFor(player);
-			if (enemy.isGoblin() &&	getPlayerStuff(player).hasBarricade()) {
-				printer.log(player, "has a Barricade against Goblins. +1");
-				soldiers++;
-			}
-			if (enemy.isZombie() && getPlayerStuff(player).hasPalisade()) {
-				printer.log(player, "has a Palisade against Zombies. +1");
-				soldiers++;
-			}
-			if (enemy.isDemon() && getPlayerStuff(player).hasChurch()) {
-				printer.log(player, "has a Church against Demons. +1");
-				soldiers++;
-			}
-
-			cityForces[player] = soldiers;
-
-			if (soldiers > strengthToBeat) {
-				printer.log(player, "won the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + "!");
-				winners++;
-				battleVictory(player, enemy);
-			} else if (soldiers == strengthToBeat) {
-				if (getPlayerStuff(player).hasStoneWall()) {
-					printer.log(player, "stalemated the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ", but won because of having a Stone Wall!");
-					winners++;
-					battleVictory(player, enemy);
-				} else {
-					printer.log(player, "stalemated the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ".");
-					battleDraw(player, enemy);
-				}
-			} else {
-				printer.log(player, "lost the fight against " + enemy.getName() + "(" + enemy.getStrength() + ") with " + soldiers + ".");
-				battleLose(player, enemy);
-			}
-		}
-
-		printer.log("");
-		if (winners > 0) {
-			int highestStrength = 0;
-			for (int player = 0; player < cityForces.length; player++) {
-				if (cityForces[player] > highestStrength) {
-					highestStrength = cityForces[player];
-				}
-			}
-			for (int player = 0; player < cityForces.length; player++) {
-				if (cityForces[player] == highestStrength) {
-					PlayerStuff stuff = getPlayerStuff(player);
-					stuff.gainPoints(1);
-					printer.log(player, "gained +1 victory point for having the most soldiers!");
-				}
-			}
-		}
-	}
-
-	private int getPlayerAtTurnOrder(int turn) {
-		for (int i = 0; i < players; i++) {
-			if (getTurnOrder()[i] == turn) {
-				return i;
-			}
-		}
-		throw new IllegalStateException("player not found in turn order");
-	}
-
-	private void grantBuildingSoldierBoost(int player) {
-		PlayerStuff stuff = getPlayerStuff(player);
-		if (stuff.hasGuardTower()) {
-			printer.log(player, "has a Guard Tower. +1");
-			getBoard().increaseSoldiers(player, 1);
-		}
-		if (stuff.hasBlacksmith()) {
-			printer.log(player, "has a Blacksmith. +1");
-			getBoard().increaseSoldiers(player, 1);
-		}
-		if (stuff.hasPalisade()) {
-			printer.log(player, "has a Palisade. +1");
-			getBoard().increaseSoldiers(player, 1);
-		}
-		if (stuff.hasStoneWall()) {
-			printer.log(player, "has a Stone Wall. +1");
-			getBoard().increaseSoldiers(player, 1);
-		}
-		if (stuff.hasFortress()) {
-			printer.log(player, "has a Fortress. +1");
-			getBoard().increaseSoldiers(player, 1);
-		}
-		if (stuff.hasChurch()) {
-			printer.log(player, "has a Church. +0");
-			getBoard().increaseSoldiers(player, 0);
-		}
-		if (stuff.hasBarricade()) {
-			printer.log(player, "has a Barricade. +0");
-			getBoard().increaseSoldiers(player, 0);
-		}
-		if (stuff.hasWizardsGuild()) {
-			printer.log(player, "has a Wizards' Guild. +1");
-			getBoard().increaseSoldiers(player, 2);
-		}
-		if (stuff.hasFarms()) {
-			printer.log(player, "has Farms. -1");
-			getBoard().increaseSoldiers(player, -1);
-		}
-	}
-
-	private boolean playersHaveUnusedDice() {
-		for (Roll roll : getRolls()) {
-			if (roll.hasUsableDice()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private void resetSoldiers() {
-		getBoard().resetSoldiers();
-		// TODO add for buildings
-	}
-	//</editor-fold>
-
-
-	//<editor-fold desc="WinterBattleResults">
-	private void battleVictory(int player, EnemyCard enemy) {
-		PlayerStuff stuff = getPlayerStuff(player);
-		Cost cost = enemy.getVictory().getCost();
-		Reward reward = enemy.getVictory().getReward();
-		printer.log(player, "collects the victory reward of: " + reward.toString());
-		stuff.payCost(cost); // shouldn't be a cost
-		stuff.receiveReward(reward);
-		if (stuff.hasFortress()) {
-			stuff.gainPoints(1);
-			printer.log(player, "uses Fortress and gains an additional +1 victory point!");
-		}
-	}
-
-	// THIS IS A REAL DRAW. STONE WALL DRAW-WINS ARE ALREADY HANDLED
-	private void battleDraw(int player, EnemyCard enemy) {
-		// do nothing
-	}
-
-	private void battleLose(int player, EnemyCard enemy) {
-		Cost cost = enemy.getDefeat().getCost();
-		Reward reward = enemy.getDefeat().getReward();
-		boolean loseABuilding = enemy.isDefeatLoseBuilding();
-		printer.log(player, "pays the defeat cost of: " + cost.toString()
-			+ (loseABuilding ? " and loses a building!" : ""));
-		getPlayerStuff(player).payCost(cost);
-		if (loseABuilding) {
-			ProvinceBuilding buildingLost = getPlayerStuff(player).loseABuilding();
-			if (buildingLost != null) {
-				printer.log(player, "loses a " + buildingLost.getName() + "(" + buildingLost.getPoints() + ").");
-			} else {
-				printer.log(player, "had no buildings. No buildings were lost.");
-			}
-		}
-		getPlayerStuff(player).receiveReward(reward); // shouldn't be a reward
-	}
-	//</editor-fold>
-
-
-	//<editor-fold desc="DeclareGameWinner(s)">
-	private void playerWins(int player, int score) {
-		printer.log("");
-		printer.log("Player " + (player+1)
-				+ " wins with " + score + " points!");
-	}
-
-	private void playerWins(int player, int score, int totalResources) {
-		printer.log("");
-		printer.log("Player " + (player+1)
-				+ " ties with " + score + " points, but wins with "
-				+ totalResources + " resources!");
-	}
-
-	private void playerWins(int player, int score, int totalResources, int totalBuildings) {
-		printer.log("");
-		printer.log("Player " + (player+1)
-				+ " ties with " + score + " points and "
-				+ totalResources + " resources, but wins with "
-				+ totalBuildings + " buildings!");
-	}
-
-
-
-	private void playersWin(int player, int score, int totalResources, int totalBuildings) {
-		printer.log("");
-		printer.log("Player " + (player+1)
-				+ " ties with " + score + " points and "
-				+ totalResources + " resources and "
-				+ totalBuildings + " buildings!");
-	}
-	//</editor-fold>
-
-
-	//<editor-fold desc="PrepareToPromptUserOrBot">
-	private void chooseAdvisor(int player, Roll myRoll) {
-		// FIXME look for existing Decision.
-		String decisionId = "chooseAdvisor(" + player + ")withRoll(" + myRoll.toString() + ")on(" + getBoard().getCurrentStageAsString() + ")";
-		Decision decision = DecisionHandler.get().getDecisionAt(decisionId);
-		if (decision == null) {
-			// if no decision exists, prompt BOT or USER to make decision
-			getProxy(player).onAdvisorChoice(myRoll, getBoard(), getPlayerStuff(player));
-		}
-
-		// now we have a decision
-
-	}
-
-	private void chooseGoods(int round, int phase) {
-		// TODO look for existing Decision.
-
-		// if no decision exists, prompt BOT or USER to make decision
-		for (int player = 0; player < players; player++) {
-			getProxy(player).onGoodsChoice(getPlayerStuff(player).countUnchosenResources());
-		}
-	}
-
-	private void chooseLosses(int round, int phase) {
-		// TODO look for existing Decision.
-
-		// if no decision exists, prompt BOT or USER to make decision
-		for (int player = 0; player < players; player++) {
-			chooseLosses(round, phase, player);
-		}
-	}
-
-	private void chooseLosses(int round, int phase, int player) {
-		// TODO look for existing Decision.
-
-		// if no decision exists, prompt BOT or USER to make decision
-		int debts = getPlayerStuff(player).countUnpaidDebts();
-		getProxy(player).onChooseSpentResources(debts, getPlayerStuff(player));
-	}
-
-	private void offerUseStatue(Roll roll, int player) {
-		// TODO look for existing Decision.
-
-		// if no decision exists, prompt BOT or USER to make decision
-		getProxy(player).onOfferUseStatue(roll);
-	}
-
-	private void offerUseChapel(Roll roll, int player) {
-		// TODO look for existing Decision.
-
-		// if no decision exists, prompt BOT or USER to make decision
-		getProxy(player).onOfferUseChapel(roll);
-	}
-
-	private void offerUseTownHall(PlayerStuff stuff, int player) {
-		// TODO look for existing Decision.
-
-		// if no decision exists, prompt BOT or USER to make decision
-		getProxy(player).onOfferUseTownHall(stuff);
-	}
-
-	private void offerConstructBuildings(int round, int phase) {
-		// TODO look for existing Decision.
-
-		// if no decision exists, prompt BOT or USER to make decision
-		printer.log("");
-		for (int player = 0; player < players; player++) {
-			getProxy(player).onBuildOption(getPlayerStuff(player));
-		}
-	}
-
-	private void offerRecruit(int round, int phase) {
-		// TODO look for existing Decision.
-
-		// if no decision exists, prompt BOT or USER to make decision
-		for (PlayerStuff p : getAllPlayersStuff()) {
-			int player = p.getPlayerId();
-			getProxy(player).onRecruitOption(p);
-		}
-	}
-
-	private void offerPeek(int player) {
-		// TODO look for existing Decision.
-
-		// if no decision exists, prompt BOT or USER to make decision
-		// peek at soldiers
-		getProxy(player).onPeek();
-	}
-	//</editor-fold>
-
-
-	//<editor-fold desc="ListenerCallbacks">
-
-	//</editor-fold>
-
 
 }
