@@ -134,7 +134,6 @@ public class Game implements GameLoop {
 				}
 				if (reward.isPeek()) {
 					offerPeek(player);
-
 				}
 			} else {
 				printer.log(player, "skipped the turn, unable to pay the gift cost.");
